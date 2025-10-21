@@ -8,12 +8,13 @@
 import SwiftUI
 
 struct SignInView: View {
-    @State var email: String = ""
-    @State var password: String = ""
-    @State var doneCaptcha: Bool = false
-    @State var showCaptcha: Bool = false
-    @State var emailTextError: String = ""
-    @EnvironmentObject var sesion: SessionManager
+    @StateObject private var viewModel: SignInViewModel
+    @State private var showCaptcha: Bool = false
+    @EnvironmentObject var session: SessionManager
+
+    init() {
+        _viewModel = StateObject(wrappedValue: SignInViewModel(sessionManager: SessionManager()))
+    }
 
     var body: some View {
         NavigationStack{
@@ -35,25 +36,30 @@ struct SignInView: View {
                         
                         
                         VStack(spacing: 20){
-                            CustonInputField(icon: "envelope", placeholder: "Correo electrónico", isSecure: false, text: $email, bottomText: emailTextError)
+                            CustonInputField(icon: "envelope", placeholder: "Correo electrónico", isSecure: false, text: $viewModel.email)
                             
-                            CustonInputField(icon: "lock", placeholder: "Password", isSecure: true, text: $password)
+                            CustonInputField(icon: "lock", placeholder: "Password", isSecure: true, text: $viewModel.password)
                         }
                         
                         Spacer()
                         
                         Button{
-                            print("iniciando sesion")
-                            showCaptcha=true
+                            showCaptcha = true
                         } label: {
-                            Text("Iniciar sesión")
-                                .font(.headline)
-                                .foregroundStyle(.white)
-                                .frame(width: 300, height: 50)
-                                .background(Color(.systemOrange))
-                                .clipShape(Capsule())
-                                .padding()
+                            if viewModel.isLoading {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            } else {
+                                Text("Iniciar sesión")
+                            }
                         }
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                        .frame(width: 300, height: 50)
+                        .background(Color(.systemOrange))
+                        .clipShape(Capsule())
+                        .padding()
+                        .disabled(viewModel.isLoading)
                     }
                     .padding()
                 }
@@ -79,11 +85,19 @@ struct SignInView: View {
                     }
                 }
             }
-            .onChange(of: email) { oldValue, newValue in
-                validateEmailScope(newValue: newValue)
+            .onAppear {
+                viewModel.sessionManager = session
             }
             .sheet(isPresented: $showCaptcha) {
-                CaptchaView(done: $sesion.logged)
+                CaptchaView() {
+                    viewModel.isCaptchaCompleted = true
+                    viewModel.login()
+                }
+            }
+            .alert(isPresented: .constant(viewModel.errorMessage != nil)) {
+                Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? ""), dismissButton: .default(Text("OK")) {
+                    viewModel.errorMessage = nil
+                })
             }
             .ignoresSafeArea()
         }
@@ -92,18 +106,6 @@ struct SignInView: View {
 
 #Preview {
     SignInView()
+        .environmentObject(SessionManager())
 }
 
-extension SignInView {
-    func validateEmailScope(newValue: String) {
-        if newValue.isEmpty {
-            emailTextError = "El correo no puede estar vacío"
-            
-        } else if !newValue.isValidEmail() {
-            emailTextError = "No se reconoce un correo valido"
-            
-        } else {
-            emailTextError = ""
-        }
-    }
-}
