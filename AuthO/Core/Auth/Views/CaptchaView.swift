@@ -8,8 +8,9 @@
 import SwiftUI
 
 struct CaptchaView: View {
-    @Binding var done: Bool
+    var onComplete: () -> Void
     @State private var number = Int.random(in: 1000...9999)
+    @Environment(\.dismiss) var dismiss
 
     // Campos individuales para cada dígito
     @State private var input1 = ""
@@ -55,15 +56,7 @@ struct CaptchaView: View {
                 .frame(height: 80)
             
             Button {
-                let input = input1 + input2 + input3 + input4
-                if input == String(number) {
-                    done = true
-                } else {
-                    
-                    number = Int.random(in: 1000...9999)
-                    clearInputs()
-                }
-                
+                verifyCaptcha()
             } label : {
                 Text("Listo")
                     .font(.headline)
@@ -81,14 +74,21 @@ struct CaptchaView: View {
             focusedField = .input1
         }
         .onChange(of: input4){ oldValue, newValue in
-            let input = input1 + input2 + input3 + input4
-            if input == String(number) {
-                done = true
-            } else {
-                
-                number = Int.random(in: 1000...9999)
-                clearInputs()
+            if newValue.count == 1 {
+                verifyCaptcha()
             }
+        }
+    }
+
+    func verifyCaptcha() {
+        let input = input1 + input2 + input3 + input4
+        if input == String(number) {
+            onComplete()
+            dismiss()
+        } else {
+            number = Int.random(in: 1000...9999)
+            clearInputs()
+            focusedField = .input1
         }
     }
 
@@ -99,33 +99,22 @@ struct CaptchaView: View {
             .frame(width: 50, height: 60)
             .font(.largeTitle)
             .multilineTextAlignment(.center)
-            .background(Color.gray.opacity(0.1))
-            .cornerRadius(8)
             .focused($focusedField, equals: field)
             .onChange(of: binding.wrappedValue) { oldValue, newValue in
-                if newValue.count > 1 {
-                    binding.wrappedValue = String(newValue.prefix(1))
-                }
-                if newValue.count == 1 {
-                    if let nextField = next {
-                        focusedField = nextField
-                    } else {
-                        focusedField = nil
-                    }
+                if newValue.count == 1, let nextField = next {
+                    focusedField = nextField
                 }
             }
-//            .disabled(binding.wrappedValue.count == 1)
     }
-
+    
     func clearInputs() {
         input1 = ""
         input2 = ""
         input3 = ""
         input4 = ""
-        focusedField = .input1
     }
 }
 
 #Preview {
-    CaptchaView(done: .constant(false))
+    CaptchaView(onComplete: {})
 }

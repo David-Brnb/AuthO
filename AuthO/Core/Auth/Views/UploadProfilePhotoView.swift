@@ -9,8 +9,7 @@ import SwiftUI
 import PhotosUI
 
 struct UploadProfilePhotoView: View {
-    @State private var photoPickerItem: PhotosPickerItem?
-    @State private var image: UIImage?
+    @StateObject private var viewModel = UploadProfilePhotoViewModel()
     @State private var openCatpcha: Bool = false
     
     @EnvironmentObject var sesion: SessionManager
@@ -19,8 +18,8 @@ struct UploadProfilePhotoView: View {
         VStack{
             header
             
-            PhotosPicker(selection: $photoPickerItem, matching: .images) {
-                if let profileImage = image {
+            PhotosPicker(selection: $viewModel.photoPickerItem, matching: .images) {
+                if let profileImage = viewModel.image {
                     Image(uiImage: profileImage)
                         .resizable()
                         .modifier(ProfileImageModifier())
@@ -35,37 +34,45 @@ struct UploadProfilePhotoView: View {
             .frame(height: 350)
             
             Button {
-                // nada
-                // subir la foto a back y lo de image captcha view
                 openCatpcha=true
             } label: {
-                Text("Continue")
-                    .font(.headline)
-                    .foregroundStyle(.white)
-                    .frame(width: 300, height: 50)
-                    .background((image==nil) ? Color(.systemGray4) : Color(.systemOrange))
-                    .clipShape(Capsule())
-                    .padding()
+                if viewModel.isLoading {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                } else {
+                    Text("Continue")
+                }
             }
+            .font(.headline)
+            .foregroundStyle(.white)
+            .frame(width: 300, height: 50)
+            .background((viewModel.image==nil) ? Color(.systemGray4) : Color(.systemOrange))
+            .clipShape(Capsule())
+            .padding()
             .shadow(color: .gray.opacity(0.5), radius: 10, x:0, y:0)
-            .disabled(image==nil)
+            .disabled(viewModel.image==nil || viewModel.isLoading)
             
             Spacer()
         }
-        .onChange(of: photoPickerItem) { _, newItem in
-            Task {
-                if let data = try? await newItem?.loadTransferable(type: Data.self),
-                   let uiImage = UIImage(data: data) {
-                    image = uiImage
+        .sheet(isPresented: $openCatpcha){
+            CaptchaView() {
+                viewModel.uploadProfilePhoto { result in
+                    switch result {
+                    case .success:
+                        sesion.login()
+                    case .failure:
+                        // Optionally handle the error, e.g., show an alert
+                        break
+                    }
                 }
             }
         }
-        .navigationDestination(isPresented: $openCatpcha){
-            CaptchaView(done: $sesion.logged)
+        .alert(isPresented: .constant(viewModel.errorMessage != nil)) {
+            Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? ""), dismissButton: .default(Text("OK")) {
+                viewModel.errorMessage = nil
+            })
         }
         .ignoresSafeArea(edges: .all)
-        
-        
     }
 }
 
