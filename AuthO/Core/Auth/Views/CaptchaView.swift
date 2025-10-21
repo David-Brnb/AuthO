@@ -29,10 +29,6 @@ struct CaptchaView: View {
         VStack {
             Spacer()
                 .frame(height: 150)
-//            Text("Captcha")
-//                .font(.system(size: 60))
-////                .fontWeight(.light)
-//                .padding(.vertical, 50)
             
             
             Text("\(String(number))")
@@ -99,6 +95,8 @@ struct CaptchaView: View {
             .frame(width: 50, height: 60)
             .font(.largeTitle)
             .multilineTextAlignment(.center)
+            .background(Color.gray.opacity(0.1))
+            .cornerRadius(8)
             .focused($focusedField, equals: field)
             .onChange(of: binding.wrappedValue) { oldValue, newValue in
                 if newValue.count == 1, let nextField = next {
