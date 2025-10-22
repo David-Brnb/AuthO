@@ -56,10 +56,11 @@ struct SignInView: View {
                         .font(.headline)
                         .foregroundStyle(.white)
                         .frame(width: 300, height: 50)
-                        .background(Color(.systemOrange))
+                        .background(viewModel.email.isEmpty || viewModel.password.isEmpty ? Color(.systemGray) : Color(.systemOrange))
                         .clipShape(Capsule())
                         .padding()
                         .disabled(viewModel.isLoading)
+                        .disabled(viewModel.email.isEmpty || viewModel.password.isEmpty)
                     }
                     .padding()
                 }

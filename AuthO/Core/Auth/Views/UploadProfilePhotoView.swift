@@ -11,6 +11,7 @@ import PhotosUI
 struct UploadProfilePhotoView: View {
     @StateObject private var viewModel = UploadProfilePhotoViewModel()
     @State private var openCatpcha: Bool = false
+    let credentials: SignUpCredentials
     
     @EnvironmentObject var sesion: SessionManager
     
@@ -56,16 +57,8 @@ struct UploadProfilePhotoView: View {
         }
         .sheet(isPresented: $openCatpcha){
             CaptchaView() {
-                viewModel.uploadProfilePhoto { result in
-                    switch result {
-                    case .success:
-                        print("yes")
-//                        sesion.login()
-                    case .failure:
-                        // Optionally handle the error, e.g., show an alert
-                        break
-                    }
-                }
+                viewModel.isCaptchaCompleted = true
+                viewModel.registerAndUpload(credentials: credentials);
             }
         }
         .alert(isPresented: .constant(viewModel.errorMessage != nil)) {
@@ -94,7 +87,7 @@ private struct ProfileImageModifier: ViewModifier {
 
 
 #Preview {
-    UploadProfilePhotoView()
+    UploadProfilePhotoView(credentials: SignUpCredentials(name: "juan", email: "admin1@ofraud.com", password: "pass123"))
 //        .environment(SessionManager(), .init())
 }
 

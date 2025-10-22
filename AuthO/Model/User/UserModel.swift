@@ -20,5 +20,5 @@ struct UserDTO: Codable, Identifiable {
     let id: Int
     let name: String
     let email: String
-    let admin: Int
+    let admin: Int?
 }

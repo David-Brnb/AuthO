@@ -9,6 +9,7 @@ import Combine
 import SwiftUI
 
 
+@MainActor
 class SessionManager: ObservableObject {
     @Published var logged: Bool
     @Published var currentUser: UserDTO?
@@ -25,14 +26,11 @@ class SessionManager: ObservableObject {
     }
     
     func login(user: UserDTO) {
-        // This will be called after a successful login API call
-        DispatchQueue.main.async {
-            self.currentUser = user
-            self.logged = true
-            
-            if let encoded = try? JSONEncoder().encode(user){
-                UserDefaults.standard.set(encoded, forKey: "currentUser")
-            }
+        self.currentUser = user
+        self.logged = true
+        
+        if let encoded = try? JSONEncoder().encode(user){
+            UserDefaults.standard.set(encoded, forKey: "currentUser")
         }
     }
 
@@ -40,11 +38,10 @@ class SessionManager: ObservableObject {
         // Clear tokens from keychain and update state
         KeychainService.shared.delete(for: "accessToken")
         KeychainService.shared.delete(for: "refreshToken")
-        DispatchQueue.main.async {
-            self.logged = false
-            self.currentUser = nil
-            UserDefaults.standard.removeObject(forKey: "currentUser")
-        }
+        
+        self.logged = false
+        self.currentUser = nil
+        UserDefaults.standard.removeObject(forKey: "currentUser")
     }
 }
 

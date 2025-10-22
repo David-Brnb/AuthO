@@ -117,9 +117,15 @@ extension ProfileView {
                 .frame(width: 120, height: 120)
                 .padding(.top, 20)
             
-            Text(sesion.currentUser!.name)
-                .font(.title3)
-                .padding(.top, 20)
+            Group{
+                if sesion.currentUser != nil{
+                    Text(sesion.currentUser!.name)
+                } else {
+                    Text("Unknown")
+                }
+            }
+            .font(.title3)
+            .padding(.top, 20)
             
             VStack(alignment: .center){
                 HStack(spacing: 25){

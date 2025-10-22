@@ -26,33 +26,43 @@ class SignInViewModel: ObservableObject {
         
         let credentials = LoginCredentials(email: email, password: password)
         
-        APIService.shared.login(credentials: credentials) { [weak self] result in
-            DispatchQueue.main.async {
+        Task { [weak self] in
+            do {
+                _ = try await APIService.shared.login(credentials: credentials)
+                await self?.fetchUser()
                 
-                switch result {
-                case .success:
-                    self?.fetchUser()
-                case .failure(let error):
-                    self?.isLoading = false
-                    switch error {
-                    case .unauthorized:
-                        self?.errorMessage = "Incorrect email or password."
-                    default:
-                        self?.errorMessage = "An unexpected error occurred. Please try again."
-                    }
+            } catch let error as APIError {
+                switch error {
+                case .unauthorized:
+                    await MainActor.run { self?.errorMessage = "Incorrect email or password." }
+                default:
+                    await MainActor.run { self?.errorMessage = "An unexpected error occurred. Please try again." }
                 }
+                
+            } catch {
+                await MainActor.run { self?.errorMessage = error.localizedDescription }
             }
+            
+            await MainActor.run { self?.isLoading = false }
+            
         }
     }
     
     private func fetchUser() {
-        APIService.shared.fetchUserProfile(){ [weak self] result in
-            DispatchQueue.main.async {
-                self?.isLoading = false
-                switch result {
-                case .success(let user):
+        isLoading = true
+        
+        Task { [weak self] in
+            do{
+                let user = try await APIService.shared.fetchUserProfile()
+                
+                await MainActor.run {
+                    self?.isLoading = false
                     self?.sessionManager.login(user: user)
-                case .failure(let error):
+                }
+                
+            } catch let error as APIError {
+                await MainActor.run {
+                    self?.isLoading = false
                     switch error {
                     case .invalidURL:
                         self?.errorMessage = "The URL for the request is invalid."
@@ -68,6 +78,13 @@ class SignInViewModel: ObservableObject {
                         self?.errorMessage = message
                     }
                     print("❌ Fetch user error:", error)
+                }
+                
+            } catch {
+                await MainActor.run {
+                    print("Error while fetching user: \(error)")
+                    self?.isLoading = false
+                    self?.errorMessage = error.localizedDescription
                 }
             }
         }

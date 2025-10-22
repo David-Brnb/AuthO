@@ -19,8 +19,47 @@ class APIService {
     
     // MARK: - Authentication
     
-    func login(credentials: LoginCredentials, completion: @escaping (Result<AuthResponse, APIError>) -> Void) {
+    func login(credentials: LoginCredentials) async throws -> AuthResponse {
         guard let url = baseURL?.appendingPathComponent("auth/login") else {
+            throw APIError.invalidURL
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        do {
+            request.httpBody = try JSONEncoder().encode(credentials)
+        } catch {
+            throw APIError.decodingError(error)
+        }
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse
+        }
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
+            if httpResponse.statusCode == 401 {
+                throw APIError.unauthorized
+            } else {
+                throw APIError.invalidResponse
+            }
+        }
+        
+        do {
+            let authResponse = try JSONDecoder().decode(AuthResponse.self, from: data)
+            KeychainService.shared.save(token: authResponse.accessToken, for: "accessToken")
+            KeychainService.shared.save(token: authResponse.refreshToken, for: "refreshToken")
+            return authResponse
+        } catch {
+            throw APIError.decodingError(error)
+        }
+    }
+    
+    func signUp(credentials: SignUpCredentials, completion: @escaping (Result<UserDTO, APIError>) -> Void){
+        guard let url = baseURL?.appendingPathComponent("users") else {
             completion(.failure(.invalidURL))
             return
         }
@@ -31,47 +70,33 @@ class APIService {
         
         do {
             request.httpBody = try JSONEncoder().encode(credentials)
+            
         } catch {
             completion(.failure(.decodingError(error)))
             return
         }
         
         URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                completion(.failure(.requestFailed(error)))
-                return
-            }
+            let result = APIServiceGeneral.handleResponse(data: data, response: response, error: error)
             
-            guard let httpResponse = response as? HTTPURLResponse else {
-                completion(.failure(.invalidResponse))
-                return
-            }
-
-            guard (200...299).contains(httpResponse.statusCode) else {
-                if httpResponse.statusCode == 401 {
-                    completion(.failure(.unauthorized))
-                } else {
-                    completion(.failure(.invalidResponse))
+            switch result {
+            case.success(let data):
+                DispatchQueue.main.async{
+                    do {
+                        let signUpResponse = try JSONDecoder().decode(UserDTO.self, from: data)
+                        completion(.success(signUpResponse))
+                        
+                    } catch {
+                        completion(.failure(.decodingError(error)))
+                    }
                 }
-                return
-            }
-            
-            guard let data = data else {
-                completion(.failure(.invalidResponse))
-                return
-            }
-            
-            DispatchQueue.main.async {
-                do {
-                    let authResponse = try JSONDecoder().decode(AuthResponse.self, from: data)
-                    KeychainService.shared.save(token: authResponse.accessToken, for: "accessToken")
-                    KeychainService.shared.save(token: authResponse.refreshToken, for: "refreshToken")
-                    completion(.success(authResponse))
-                } catch {
-                    completion(.failure(.decodingError(error)))
+            case.failure(let apiError):
+                DispatchQueue.main.async{
+                    completion(.failure(apiError))
                 }
             }
         }.resume()
+        
     }
 
     func uploadFile(image: UIImage, completion: @escaping (Result<FileUploadResponse, APIError>) -> Void) {
@@ -134,10 +159,9 @@ class APIService {
     
     // MARK: - Authenticated Request Example
     
-    func fetchUserProfile(completion: @escaping (Result<UserDTO, APIError>) -> Void) {
+    func fetchUserProfile() async throws -> UserDTO {
         guard let url = baseURL?.appendingPathComponent("auth/profile") else {
-            completion(.failure(.invalidURL))
-            return
+            throw APIError.invalidURL
         }
         
         var request = URLRequest(url: url)
@@ -146,35 +170,18 @@ class APIService {
         if let token = KeychainService.shared.retrieve(for: "accessToken") {
             request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         } else {
-            completion(.failure(.unauthorized))
-            return
+            throw APIError.unauthorized
         }
         
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                completion(.failure(.requestFailed(error)))
-                return
-            }
-
-            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
-                completion(.failure(.invalidResponse))
-                return
-            }
-
-            guard let data = data else {
-                completion(.failure(.invalidResponse))
-                return
-            }
-            
-            DispatchQueue.main.async {
-                do {
-                    let userProfile = try JSONDecoder().decode(UserDTO.self, from: data)
-                    completion(.success(userProfile))
-                } catch {
-                    completion(.failure(.decodingError(error)))
-                }
-            }
-        }.resume()
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            throw APIError.invalidResponse
+        }
+        
+        let userProfile = try JSONDecoder().decode(UserDTO.self, from: data)
+        return userProfile
     }
 }
 

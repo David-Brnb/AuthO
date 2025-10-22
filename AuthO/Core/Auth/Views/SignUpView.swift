@@ -66,10 +66,11 @@ struct SignUpView: View {
                                 .font(.headline)
                                 .foregroundStyle(.white)
                                 .frame(width: 300, height: 50)
-                                .background(Color(.systemOrange))
+                                .background(email.isEmpty || password.isEmpty || username.isEmpty ? Color(.systemGray) : Color(.systemOrange))
                                 .clipShape(Capsule())
                                 .padding()
                         }
+//                        .disabled(email.isEmpty || password.isEmpty || username.isEmpty)
                     }
                     .padding()
                 }
@@ -107,7 +108,7 @@ struct SignUpView: View {
                 AvisoPrivacidadView()
             }
             .navigationDestination(isPresented: $showSelectPhoto){
-                UploadProfilePhotoView()
+                UploadProfilePhotoView(credentials: SignUpCredentials(name: username, email: email, password: password))
             }
             .ignoresSafeArea()
         
