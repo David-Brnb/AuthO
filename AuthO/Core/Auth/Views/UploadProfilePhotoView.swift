@@ -9,11 +9,16 @@ import SwiftUI
 import PhotosUI
 
 struct UploadProfilePhotoView: View {
-    @StateObject private var viewModel = UploadProfilePhotoViewModel()
+    @StateObject private var viewModel: UploadProfilePhotoViewModel
     @State private var openCatpcha: Bool = false
     let credentials: SignUpCredentials
     
-    @EnvironmentObject var sesion: SessionManager
+//    @EnvironmentObject var sesion: SessionManager
+    
+    init(credentials: SignUpCredentials, sessionManager: SessionManager) {
+        self.credentials = credentials
+        _viewModel = StateObject(wrappedValue: UploadProfilePhotoViewModel(sessionManager: sessionManager))
+    }
     
     var body: some View {
         VStack{
@@ -58,7 +63,9 @@ struct UploadProfilePhotoView: View {
         .sheet(isPresented: $openCatpcha){
             CaptchaView() {
                 viewModel.isCaptchaCompleted = true
-                viewModel.registerAndUpload(credentials: credentials);
+                Task {
+                    await viewModel.registerAndUpload(credentials: credentials)
+                }
             }
         }
         .alert(isPresented: .constant(viewModel.errorMessage != nil)) {
@@ -83,12 +90,6 @@ private struct ProfileImageModifier: ViewModifier {
             .frame(width: 250, height: 250)
             .clipShape(Circle())
     }
-}
-
-
-#Preview {
-    UploadProfilePhotoView(credentials: SignUpCredentials(name: "juan", email: "admin1@ofraud.com", password: "pass123"))
-//        .environment(SessionManager(), .init())
 }
 
 extension UploadProfilePhotoView {

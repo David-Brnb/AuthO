@@ -4,6 +4,7 @@ import SwiftUI
 import Combine
 import PhotosUI
 
+@MainActor
 class UploadProfilePhotoViewModel: ObservableObject {
     @Published var photoPickerItem: PhotosPickerItem?
     @Published var image: UIImage?
@@ -13,7 +14,10 @@ class UploadProfilePhotoViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
-    init() {
+    var sessionManager: SessionManager
+    
+    init(sessionManager: SessionManager) {
+        self.sessionManager = sessionManager
         $photoPickerItem
             .compactMap { $0 }
             .flatMap { item in
@@ -33,41 +37,7 @@ class UploadProfilePhotoViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func registerUser(credentials: SignUpCredentials, completion: @escaping(Result<UserDTO, APIError>)->Void){
-        APIService.shared.signUp(credentials: credentials) { result in
-            switch result {
-            case .success(let user):
-                completion(.success(user))
-            case.failure(let error):
-                print("Error while signing up: \(error)")
-                completion(.failure(error))
-            }
-        }
-    }
-    
-    func uploadProfilePhoto(completion: @escaping (Result<String, APIError>) -> Void) {
-        guard let image = image else {
-            completion(.failure(.custom("No image selected")))
-            return
-        }
-        
-        isLoading = true
-        
-        APIService.shared.uploadFile(image: image) { [weak self] result in
-            DispatchQueue.main.async {
-                self?.isLoading = false
-                switch result {
-                case .success(let response):
-                    completion(.success(response.path))
-                case .failure(let error):
-                    self?.errorMessage = "Failed to upload image."
-                    completion(.failure(error))
-                }
-            }
-        }
-    }
-    
-    func registerAndUpload(credentials: SignUpCredentials){
+    func registerAndUpload(credentials: SignUpCredentials) async {
         guard isCaptchaCompleted else {
             errorMessage = "Please complete the CAPTCHA."
             return
@@ -76,34 +46,33 @@ class UploadProfilePhotoViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         
-//        do {
-//            let user = try await APIService.shared.signUp(credentials: credentials)
-//        } catch {
-//            isLoading = false
-//            errorMessage = error.localizedDescription
-//            print("Error: \(error)")
-//        }
-//        
-        self.registerUser(credentials: credentials) { [weak self] result in
-            switch result {
-            case .success(let user):
-                self?.isLoading = false
-                
-                print("User signed up: \(user)")
-                // deberia de aplicar aqui la funcion de login en un tipo guard let mejor
-                
-                self?.uploadProfilePhoto(){ [weak self] result in
-                    switch result {
-                    case .success(let path):
-                        print(path)
-                    case .failure(let error):
-                        print(error)
-                    }
-                }
-            case .failure(let error):
-                print(error)
-                self?.isLoading = false
+        do {
+            let user = try await APIService.shared.signUp(credentials: credentials)
+            
+            let loginCredentials = LoginCredentials(email: credentials.email, password: credentials.password)
+            let authResponse = try await APIService.shared.login(credentials: loginCredentials)
+            
+            var profilePhotoFilename: String? = nil
+            if let image = image {
+                let uploadResponse = try await APIService.shared.uploadFile(image: image)
+                profilePhotoFilename = uploadResponse.filename
             }
+            
+            // hasta aqui todo funciona muy bien
+            
+            let updateUser = try await APIService.shared.updateUserProfile(body: UpdateUserProfileBody(id:user.id, profile_pic_url: profilePhotoFilename))
+            
+            if updateUser {
+                sessionManager.login(user: user)
+            } else {
+                sessionManager.logout()
+            }
+        } catch {
+            errorMessage = error.localizedDescription
+            print("Error: \(error)")
         }
+        
+        
+        isLoading = false
     }
 }

@@ -58,10 +58,9 @@ class APIService {
         }
     }
     
-    func signUp(credentials: SignUpCredentials, completion: @escaping (Result<UserDTO, APIError>) -> Void){
+    func signUp(credentials: SignUpCredentials) async throws -> UserDTO {
         guard let url = baseURL?.appendingPathComponent("users") else {
-            completion(.failure(.invalidURL))
-            return
+            throw APIError.invalidURL
         }
         
         var request = URLRequest(url: url)
@@ -72,37 +71,30 @@ class APIService {
             request.httpBody = try JSONEncoder().encode(credentials)
             
         } catch {
-            completion(.failure(.decodingError(error)))
-            return
+            throw APIError.decodingError(error)
         }
         
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            let result = APIServiceGeneral.handleResponse(data: data, response: response, error: error)
-            
-            switch result {
-            case.success(let data):
-                DispatchQueue.main.async{
-                    do {
-                        let signUpResponse = try JSONDecoder().decode(UserDTO.self, from: data)
-                        completion(.success(signUpResponse))
-                        
-                    } catch {
-                        completion(.failure(.decodingError(error)))
-                    }
-                }
-            case.failure(let apiError):
-                DispatchQueue.main.async{
-                    completion(.failure(apiError))
-                }
-            }
-        }.resume()
+        let (data, response) = try await URLSession.shared.data(for: request)
         
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 401 {
+                throw APIError.unauthorized
+            }
+            throw APIError.invalidResponse
+        }
+        
+        do {
+            let signUpResponse = try JSONDecoder().decode(UserDTO.self, from: data)
+            return signUpResponse
+        } catch {
+            throw APIError.decodingError(error)
+        }
     }
 
-    func uploadFile(image: UIImage, completion: @escaping (Result<FileUploadResponse, APIError>) -> Void) {
+    func uploadFile(image: UIImage) async throws -> FileUploadResponse {
         guard let url = baseURL?.appendingPathComponent("file/upload") else {
-            completion(.failure(.invalidURL))
-            return
+            throw APIError.invalidURL
         }
 
         var request = URLRequest(url: url)
@@ -111,50 +103,47 @@ class APIService {
         let boundary = UUID().uuidString
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
 
-        if let token = KeychainService.shared.retrieve(for: "accessToken") {
-            request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        } else {
-            completion(.failure(.unauthorized))
-            return
+        guard let token = KeychainService.shared.retrieve(for: "accessToken") else {
+            throw APIError.unauthorized
         }
+        request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 
+        // Construir el body multipart
         var data = Data()
-        // Add the image data to the request body
         data.append("\r\n--\(boundary)\r\n".data(using: .utf8)!)
         data.append("Content-Disposition: form-data; name=\"file\"; filename=\"photo.jpg\"\r\n".data(using: .utf8)!)
         data.append("Content-Type: image/jpeg\r\n\r\n".data(using: .utf8)!)
-        if let imageData = image.jpegData(compressionQuality: 0.8) {
-            data.append(imageData)
+        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+            throw APIError.custom("Could not convert UIImage to JPEG data.")
         }
+        data.append(imageData)
         data.append("\r\n--\(boundary)--\r\n".data(using: .utf8)!)
 
         request.httpBody = data
-
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                completion(.failure(.requestFailed(error)))
-                return
+        
+        // Llamada async con URLSession
+        let (responseData, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse
+        }
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
+            if httpResponse.statusCode == 401 {
+                throw APIError.unauthorized
+                
+            } else {
+                throw APIError.invalidResponse
             }
-
-            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
-                completion(.failure(.invalidResponse))
-                return
-            }
-
-            guard let data = data else {
-                completion(.failure(.invalidResponse))
-                return
-            }
+        }
+        
+        do {
+            let fileUploadResponse = try JSONDecoder().decode(FileUploadResponse.self, from: responseData)
+            return fileUploadResponse
             
-            DispatchQueue.main.async {
-                do {
-                    let fileUploadResponse = try JSONDecoder().decode(FileUploadResponse.self, from: data)
-                    completion(.success(fileUploadResponse))
-                } catch {
-                    completion(.failure(.decodingError(error)))
-                }
-            }
-        }.resume()
+        } catch {
+            throw APIError.decodingError(error)
+        }
     }
     
     // MARK: - Authenticated Request Example
@@ -182,6 +171,38 @@ class APIService {
         
         let userProfile = try JSONDecoder().decode(UserDTO.self, from: data)
         return userProfile
+    }
+    
+    func updateUserProfile(body: UpdateUserProfileBody) async throws -> Bool {
+        guard let url = baseURL?.appendingPathComponent("users") else {
+            throw APIError.invalidURL
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "PATCH"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        guard let token = KeychainService.shared.retrieve(for: "accessToken") else {
+            throw APIError.unauthorized
+        }
+        request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        
+        let encoder = JSONEncoder()
+        request.httpBody = try encoder.encode(body)
+        
+        let (_, response) = try await URLSession.shared.data(for: request)
+        
+        if let httpResponse = response as? HTTPURLResponse{
+            if httpResponse.statusCode == 200 {
+                return true
+                
+            } else {
+                print(httpResponse.statusCode)
+                return false
+            }
+        } else {
+            return false
+        }
     }
 }
 

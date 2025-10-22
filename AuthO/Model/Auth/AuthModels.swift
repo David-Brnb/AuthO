@@ -12,6 +12,14 @@ struct SignUpCredentials: Codable {
     let password: String
 }
 
+struct UpdateUserProfileBody: Codable {
+    let id: Int
+    var name: String? = nil
+    var email: String? = nil
+    var password: String? = nil
+    var profile_pic_url: String? = nil
+}
+
 struct AuthResponse: Codable {
     let accessToken: String
     let refreshToken: String

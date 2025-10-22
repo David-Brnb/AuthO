@@ -19,6 +19,8 @@ struct SignUpView: View {
     @State private var showAviso: Bool = false
     @State private var showSelectPhoto: Bool = false
     
+    @EnvironmentObject var sesion: SessionManager
+    
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
@@ -108,7 +110,7 @@ struct SignUpView: View {
                 AvisoPrivacidadView()
             }
             .navigationDestination(isPresented: $showSelectPhoto){
-                UploadProfilePhotoView(credentials: SignUpCredentials(name: username, email: email, password: password))
+                UploadProfilePhotoView(credentials: SignUpCredentials(name: username, email: email, password: password), sessionManager: sesion)
             }
             .ignoresSafeArea()
         
