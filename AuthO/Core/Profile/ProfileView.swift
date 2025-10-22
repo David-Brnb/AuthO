@@ -123,7 +123,7 @@ extension ProfileView {
                     .resizable()
                     .scaledToFill()
                     .frame(width: 120, height: 120)
-                    .clipShape(Circle())   
+                    .clipShape(Circle())
                     .padding(.top, 20)
             } else {
                 Circle()

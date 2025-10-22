@@ -13,6 +13,8 @@ struct CategoriesView: View {
     
     @State var selectedCategory: CategoryModel?
     
+    @StateObject private var categoryVM = CategoryViewModel.shared
+    
     let columns = [
         GridItem(.flexible(), spacing: 20),
         GridItem(.flexible())
@@ -23,7 +25,7 @@ struct CategoriesView: View {
             Divider()
                 .frame(height: 20)
             LazyVGrid(columns: columns, spacing: 30) {
-                ForEach(categories, id: \.id) { category in
+                ForEach(categoryVM.categories, id: \.id) { category in
                     
                     Button {
                         selectedCategory = category
@@ -40,6 +42,11 @@ struct CategoriesView: View {
                         .presentationDragIndicator(.visible)
         }
         .navigationTitle("Categorías")
+        .onAppear() {
+            if categoryVM.categories.isEmpty {
+                categoryVM.fetchCategories()
+            }
+        }
     }
 }
 
