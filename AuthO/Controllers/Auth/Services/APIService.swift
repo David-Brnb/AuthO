@@ -61,13 +61,15 @@ class APIService {
                 return
             }
             
-            do {
-                let authResponse = try JSONDecoder().decode(AuthResponse.self, from: data)
-                KeychainService.shared.save(token: authResponse.accessToken, for: "accessToken")
-                KeychainService.shared.save(token: authResponse.refreshToken, for: "refreshToken")
-                completion(.success(authResponse))
-            } catch {
-                completion(.failure(.decodingError(error)))
+            DispatchQueue.main.async {
+                do {
+                    let authResponse = try JSONDecoder().decode(AuthResponse.self, from: data)
+                    KeychainService.shared.save(token: authResponse.accessToken, for: "accessToken")
+                    KeychainService.shared.save(token: authResponse.refreshToken, for: "refreshToken")
+                    completion(.success(authResponse))
+                } catch {
+                    completion(.failure(.decodingError(error)))
+                }
             }
         }.resume()
     }
@@ -118,19 +120,21 @@ class APIService {
                 completion(.failure(.invalidResponse))
                 return
             }
-
-            do {
-                let fileUploadResponse = try JSONDecoder().decode(FileUploadResponse.self, from: data)
-                completion(.success(fileUploadResponse))
-            } catch {
-                completion(.failure(.decodingError(error)))
+            
+            DispatchQueue.main.async {
+                do {
+                    let fileUploadResponse = try JSONDecoder().decode(FileUploadResponse.self, from: data)
+                    completion(.success(fileUploadResponse))
+                } catch {
+                    completion(.failure(.decodingError(error)))
+                }
             }
         }.resume()
     }
     
     // MARK: - Authenticated Request Example
     
-    func fetchUserProfile(completion: @escaping (Result<UserModel, APIError>) -> Void) {
+    func fetchUserProfile(completion: @escaping (Result<UserDTO, APIError>) -> Void) {
         guard let url = baseURL?.appendingPathComponent("auth/profile") else {
             completion(.failure(.invalidURL))
             return
@@ -161,13 +165,16 @@ class APIService {
                 completion(.failure(.invalidResponse))
                 return
             }
-
-            do {
-                let userProfile = try JSONDecoder().decode(UserModel.self, from: data)
-                completion(.success(userProfile))
-            } catch {
-                completion(.failure(.decodingError(error)))
+            
+            DispatchQueue.main.async {
+                do {
+                    let userProfile = try JSONDecoder().decode(UserDTO.self, from: data)
+                    completion(.success(userProfile))
+                } catch {
+                    completion(.failure(.decodingError(error)))
+                }
             }
         }.resume()
     }
 }
+

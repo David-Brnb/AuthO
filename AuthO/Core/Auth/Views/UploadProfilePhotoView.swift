@@ -59,7 +59,8 @@ struct UploadProfilePhotoView: View {
                 viewModel.uploadProfilePhoto { result in
                     switch result {
                     case .success:
-                        sesion.login()
+                        print("yes")
+//                        sesion.login()
                     case .failure:
                         // Optionally handle the error, e.g., show an alert
                         break

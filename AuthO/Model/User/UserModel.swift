@@ -15,3 +15,10 @@ struct UserModel: Codable, Identifiable{
     let profileImageUrl: String
     let updateDate: Date
 }
+
+struct UserDTO: Codable, Identifiable {
+    let id: Int
+    let name: String
+    let email: String
+    let admin: Int
+}

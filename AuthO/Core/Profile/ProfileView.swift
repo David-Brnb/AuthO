@@ -16,31 +16,30 @@ struct ProfileView: View {
         NavigationStack{
             VStack{
                 ScrollView {
-                    
-                Divider()
+                    Divider()
                     .padding(.top, 170)
                 
-                headerView
+                    headerView
+                    
+                    VStack(alignment: .leading){
+                        
+                        Text("Reportes")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal)
                 
-                VStack(alignment: .leading){
-                    
-                    Text("Reportes")
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal)
-            
-                    ForEach(ExampleCards.cards, id: \.titulo) { card in
-                        ReportCard(report: card)
-                            .padding(.horizontal)
-                            .padding(.vertical, 8)
+                        ForEach(ExampleCards.cards, id: \.titulo) { card in
+                            ReportCard(report: card)
+                                .padding(.horizontal)
+                                .padding(.vertical, 8)
+                        }
+                        
+                        Spacer()
+                            .frame(height: 90)
+                        
                     }
-                    
-                    Spacer()
-                        .frame(height: 90)
-                    
-                }
-                .padding(.horizontal)
-                .padding(.top)
+                    .padding(.horizontal)
+                    .padding(.top)
                     
                 }
                 .scrollIndicators(.hidden)
@@ -87,8 +86,7 @@ struct ProfileView: View {
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        print("saliendo")
-                        sesion.logged = false
+                        sesion.logout()
                         
                     } label: {
                         Image(systemName: "door.right.hand.open")
@@ -119,7 +117,7 @@ extension ProfileView {
                 .frame(width: 120, height: 120)
                 .padding(.top, 20)
             
-            Text("Eduardo Antonio Mora Sanchez")
+            Text(sesion.currentUser!.name)
                 .font(.title3)
                 .padding(.top, 20)
             
