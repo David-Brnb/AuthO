@@ -21,4 +21,5 @@ struct UserDTO: Codable, Identifiable {
     let name: String
     let email: String
     let admin: Int?
+    let profile_pic_url: String?
 }

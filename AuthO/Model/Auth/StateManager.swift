@@ -29,6 +29,8 @@ class SessionManager: ObservableObject {
         self.currentUser = user
         self.logged = true
         
+        print("Logged in as: \(user)")
+        
         if let encoded = try? JSONEncoder().encode(user){
             UserDefaults.standard.set(encoded, forKey: "currentUser")
         }

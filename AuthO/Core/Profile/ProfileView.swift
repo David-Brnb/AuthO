@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct ProfileView: View {
     @EnvironmentObject var sesion: SessionManager
@@ -102,6 +103,9 @@ struct ProfileView: View {
             }
             .ignoresSafeArea()
         }
+        .onAppear(){
+            print("This is the current user \(sesion.currentUser)")
+        }
         
     }
 }
@@ -113,9 +117,19 @@ struct ProfileView: View {
 extension ProfileView {
     var headerView: some View {
         Group{
-            Circle()
-                .frame(width: 120, height: 120)
-                .padding(.top, 20)
+            if let profilePicPath = sesion.currentUser?.profile_pic_url{
+                let url = APIServiceGeneral.baseURL.appendingPathComponent("file/download/\(profilePicPath)")
+                KFImage(url)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 120, height: 120)
+                    .clipShape(Circle())   
+                    .padding(.top, 20)
+            } else {
+                Circle()
+                    .frame(width: 120, height: 120)
+                    .padding(.top, 20)
+            }
             
             Group{
                 if sesion.currentUser != nil{

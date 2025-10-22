@@ -10,6 +10,8 @@ import Foundation
 class APIServiceGeneral {
     private init() {}
     
+    static let baseURL = URL(string: "http://localhost:3001/")!
+    
     static func handleResponse(data: Data?, response: URLResponse?, error: Error?) -> Result<Data, APIError> {
         if let error = error {
             return .failure(.requestFailed(error))
