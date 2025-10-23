@@ -49,3 +49,12 @@ struct ReportCardModel: Codable, Identifiable {
     let deleted_at: String?
     let category: CategoryModel
 }
+
+struct uploadReportCardModel: Codable {
+    let title: String
+    let description: String
+    let report_pic_url: String
+    let category_id: Int
+    let reference_url: String
+    let status_id: Int
+}

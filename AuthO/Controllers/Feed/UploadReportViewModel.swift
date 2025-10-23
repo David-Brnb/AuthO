@@ -44,27 +44,47 @@ class UploadReportViewModel:  ObservableObject {
             .store(in: &cancellables)
     }
     
-    func uploadPhoto() async {
+    func uploadPhotoReport() async -> Bool {
         
         isLoading = true
         errorMessage = nil
         
         do {
-            var profilePhotoFilename: String? = nil
+            var reportPhotoFilename: String? = nil
             if let image = image {
                 let uploadResponse = try await APIService.shared.uploadFile(image: image)
-                profilePhotoFilename = uploadResponse.filename
+                reportPhotoFilename = uploadResponse.filename
             }
             
-            if(profilePhotoFilename == nil){
-                throw APIError.custom("No se pudo subir la foto")
+            if(reportPhotoFilename == nil){
+                isLoading = false;
+                return false;
             }
             
-            print(profilePhotoFilename!)
+            print(reportPhotoFilename!)
+            
+            let report = uploadReportCardModel(title: title, description: description, report_pic_url: reportPhotoFilename!, category_id: category!.id, reference_url: url, status_id: 1)
+            
+            let uploadReportResponse = try await APIServiceFeed.shared.uploadReport(report: report)
+            
+            
+            isLoading = false;
+            if uploadReportResponse {
+                print("Report uploaded successfully")
+                return true;
+                
+            } else {
+                errorMessage = "No se pudo subir el reporte"
+                return false;
+            }
+            
             
         } catch {
+            isLoading = false;
             errorMessage = error.localizedDescription
             print("Error: \(error)")
+            return false;
         }
     }
+    
 }

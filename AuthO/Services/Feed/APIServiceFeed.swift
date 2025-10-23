@@ -93,6 +93,7 @@ class APIServiceFeed {
         
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         if let token = KeychainService.shared.retrieve(for: "accessToken") {
             request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
@@ -121,5 +122,44 @@ class APIServiceFeed {
         }
         
         return true;
+    }
+    
+    func uploadReport(report: uploadReportCardModel) async throws -> Bool {
+        guard let url = baseURL?.appendingPathComponent("reports") else {
+            return false;
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        if let token = KeychainService.shared.retrieve(for: "accessToken") {
+            request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        } else {
+            return false;
+        }
+        
+        request.httpBody = try? JSONEncoder().encode(report)
+        
+        print(request)
+        
+        let (_, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            print("No se pudo convertir la respuesta en HTTPURLResponse.")
+            return false
+        }
+
+        guard (200...299).contains(httpResponse.statusCode) else {
+            print("❌ Error HTTP: \(httpResponse.statusCode)")
+
+            // Mostrar headers (útil para debug)
+            print("📬 Headers: \(httpResponse.allHeaderFields)")
+
+            return false
+        }
+        
+        return true;
+        
     }
 }
