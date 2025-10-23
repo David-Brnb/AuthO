@@ -23,9 +23,9 @@ struct SearchView: View {
                 ScrollView{
                     if searchText.isEmpty {
                         ForEach(ExampleCards.cards, id: \.titulo) { card in
-                            NormalReportCardView(report: card, detail: false)
-                                .padding(.horizontal)
-                                .padding(.vertical, 8)
+//                            NormalReportCardView(report: card, detail: false)
+//                                .padding(.horizontal)
+//                                .padding(.vertical, 8)
                         }
                         
                     } else {

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CategoryMenuView: View {
     @Binding var selectedCategory: CategoryModel?
+    @StateObject private var categoryVM = CategoryViewModel.shared
     
     var body: some View {
         Menu {
@@ -19,7 +20,7 @@ struct CategoryMenuView: View {
                     .tint(.blue)
             }
             
-            ForEach(ExampleCategories.all, id: \.id){ category in
+            ForEach(categoryVM.categories, id: \.id){ category in
                 Button {
                     selectedCategory = category
                 }label: {

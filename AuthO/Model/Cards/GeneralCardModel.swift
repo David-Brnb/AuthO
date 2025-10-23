@@ -22,3 +22,30 @@ struct CardModel: Codable, Identifiable {
     let likes: Int
     let comments: [ComentaryModel]
 }
+
+struct ReportCardModelDTO: Codable, Identifiable {
+    let id: Int
+    let title: String
+    let description: String
+    let report_pic_url: String
+    let category_id: Int
+    let user_id: Int
+    let reference_url: String
+    let creation_date: String
+    let status_id: Int
+    let deleted_at: String?
+}
+
+struct ReportCardModel: Codable, Identifiable {
+    let id: Int
+    let title: String
+    let description: String
+    let report_pic_url: String
+    let category_id: Int
+    let user_id: Int
+    let reference_url: String
+    let creation_date: String
+    let status_id: Int
+    let deleted_at: String?
+    let category: CategoryModel
+}

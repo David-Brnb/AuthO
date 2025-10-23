@@ -9,13 +9,13 @@ import SwiftUI
 import Kingfisher
 
 struct CommentView: View {
-    let comment: ComentaryModel
+    let comment: CommentDTO
     
     var body: some View {
         Card {
             VStack(alignment: .leading){
                 HStack (alignment: .top){
-                    KFImage(URL(string: comment.user.profileImageUrl))
+                    KFImage(URL(string: comment.user.profilePicURL))
                         .resizable()
                         .scaledToFill()
                         .clipShape(Circle())
@@ -38,7 +38,7 @@ struct CommentView: View {
                 }
                 
                 HStack{
-                    CommentsView(comments: comment.comments.count){}
+//                    CommentsView(comments: comment.){}
                     Spacer()
                     
                     LikeView(likes: comment.likes){}
@@ -54,6 +54,6 @@ struct CommentView: View {
     }
 }
 
-#Preview {
-    CommentView(comment: ExampleComments.comment3)
-}
+//#Preview {
+////    CommentView(comment: ExampleComments.comment3)
+//}

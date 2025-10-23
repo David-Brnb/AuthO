@@ -2,8 +2,14 @@ import SwiftUI
 import Kingfisher
 
 struct ReportDetailView: View {
-    @State var report: CardModel
+    @State var report: ReportCardModel
     @State private var replyText: String = ""
+    
+    @StateObject private var viewModel: ReportCardDetailViewModel = ReportCardDetailViewModel()
+    
+    init(report: ReportCardModel) {
+        self.report = report
+    }
 
     var body: some View {
         NavigationStack {
@@ -17,7 +23,7 @@ struct ReportDetailView: View {
                         Divider()
                             .padding(.horizontal, 10)
                         
-                        if !report.comments.isEmpty {
+                        if !viewModel.comments.isEmpty {
                             HStack {
                                 Text("Comments")
                                     .font(.caption)
@@ -27,7 +33,7 @@ struct ReportDetailView: View {
                                 Spacer()
                             }
                             
-                            ForEach(report.comments, id: \.id) { comment in
+                            ForEach(viewModel.comments, id: \.id) { comment in
                                 NavigationLink {
                                     DetailCommentView(comment: comment)
                                 } label: {
@@ -49,10 +55,10 @@ struct ReportDetailView: View {
             }
             .navigationTitle("Reporte")
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear() {
+                viewModel.fetchComments(reportCardId: report.id)
+            }
         }
     }
 }
 
-#Preview {
-    ReportDetailView(report: ExampleCards.cards[0])
-}

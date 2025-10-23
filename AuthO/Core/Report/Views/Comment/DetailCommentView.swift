@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct DetailCommentView: View {
-    @State var comment: ComentaryModel
+    @State var comment: CommentDTO
     
     var body: some View {
         NavigationStack{
@@ -20,26 +20,26 @@ struct DetailCommentView: View {
                     Divider()
                         .padding(.horizontal, 10)
                     
-                    if !comment.comments.isEmpty {
-                        HStack{
-                            Text("Comments")
-                                .font(.caption)
-                                .foregroundStyle(.gray)
-                                .padding(.horizontal, 20)
-                                .padding(.top, 20)
-                            Spacer()
-                        }
-                        
-                        ForEach(comment.comments, id: \.id) { comment in
-                            NavigationLink {
-                                DetailCommentView(comment: comment)
-                            } label : {
-                                CommentView(comment: comment)
-                                    .padding(.vertical, 40)
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
+//                    if !comment.comments.isEmpty {
+//                        HStack{
+//                            Text("Comments")
+//                                .font(.caption)
+//                                .foregroundStyle(.gray)
+//                                .padding(.horizontal, 20)
+//                                .padding(.top, 20)
+//                            Spacer()
+//                        }
+//                        
+//                        ForEach(comment.comments, id: \.id) { comment in
+//                            NavigationLink {
+//                                DetailCommentView(comment: comment)
+//                            } label : {
+//                                CommentView(comment: comment)
+//                                    .padding(.vertical, 40)
+//                            }
+//                            .buttonStyle(.plain)
+//                        }
+//                    }
                 }
                 
                 FloatingInputText(text: .constant("")){
@@ -52,6 +52,6 @@ struct DetailCommentView: View {
     }
 }
 
-#Preview {
-    DetailCommentView(comment: ExampleComments.comment3)
-}
+//#Preview {
+//    DetailCommentView(comment: ExampleComments.comment3)
+//}

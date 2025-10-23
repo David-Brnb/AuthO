@@ -11,7 +11,9 @@ struct FeedView: View {
     @Binding var selectedIndex: Int
     @State private var showAddReport: Bool = false
     @State private var selectedCategory: CategoryModel? = nil
-    @State private var selectedReport: CardModel? = nil
+    @State private var selectedReport: ReportCardModel? = nil
+    
+    @StateObject private var viewModel: FeedViewModel = FeedViewModel.shared
     
     var body: some View {
         NavigationView{
@@ -21,10 +23,10 @@ struct FeedView: View {
                         .padding(.top, 170)
                     
                     let filteredCards = selectedCategory == nil
-                        ? ExampleCards.cards
-                        : ExampleCards.cards.filter { $0.categoria == selectedCategory }
+                    ? viewModel.reports
+                        : viewModel.reports.filter { $0.category == selectedCategory }
                     
-                    ForEach(filteredCards, id: \.titulo) { card in
+                    ForEach(filteredCards, id: \.id) { card in
                         
                         Button {
                             selectedReport = card
@@ -80,6 +82,13 @@ struct FeedView: View {
                 ReportDetailView(report: report)
             }
             .ignoresSafeArea()
+            .onAppear(){
+                if viewModel.reports.isEmpty {
+                    print("NO hay datos")
+                    
+                    viewModel.fetchReports()
+                }
+            }
         }
     }
 }

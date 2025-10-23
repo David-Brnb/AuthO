@@ -102,9 +102,9 @@ struct ProfileView: View {
                 FAQsView()
             }
             .ignoresSafeArea()
-        }
-        .onAppear(){
-            // nada por ahora
+            .onAppear(){
+                _ = FeedViewModel.shared
+            }
         }
         
     }
