@@ -6,6 +6,7 @@ struct ReportDetailView: View {
     @State private var replyText: String = ""
     
     @StateObject private var viewModel: ReportCardDetailViewModel = ReportCardDetailViewModel()
+    @StateObject private var viewModelComment: CommentViewModel = CommentViewModel()
     
     init(report: ReportCardModel) {
         self.report = report
@@ -47,11 +48,17 @@ struct ReportDetailView: View {
                         Spacer(minLength: 80)
                     }
                 }
+                .refreshable {
+                    viewModel.fetchComments(reportCardId: report.id)
+                }
                 
                 
                 FloatingInputText(text: $replyText){
                     // aqui va lo que se manda en el mensaje
                     print("sending comment on report")
+                    viewModelComment.createComment(comment: commentResponse(content: replyText, report_id: report.id, parent_comment_id: nil))
+                    viewModel.fetchComments(reportCardId: report.id)
+                    replyText=""
                 }
             }
             .navigationTitle("Reporte")

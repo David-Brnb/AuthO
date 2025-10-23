@@ -50,19 +50,18 @@ class CommentViewModel: ObservableObject {
         
         Task {
             do {
-                print("commenting")
                 let commented = try await APIServiceFeed.shared.uploadComment(comment: comment)
                 
                 if commented {
-                    print("Commented h")
-                    fetchComments(commentId: comment.parent_comment_id!)
+                    print("Commentario realizado")
                     
                 } else {
-                    print("No")
+                    self.error = "no se pudo mandar el comentario";
                     throw APIError.custom("Error while uploading comment");
                 }
                 
             } catch {
+                self.error = error.localizedDescription;
                 throw error;
             }
         }

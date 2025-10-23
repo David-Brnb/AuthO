@@ -44,6 +44,9 @@ struct FeedView: View {
                         .frame(height: 90)
                     
                 }
+                .refreshable {
+                    viewModel.fetchReports()
+                }
                 .navigationTitle("Feed")
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {

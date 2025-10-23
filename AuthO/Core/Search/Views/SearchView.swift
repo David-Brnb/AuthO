@@ -44,6 +44,9 @@ struct SearchView: View {
                     }
                     
                 }
+                .refreshable {
+                    viewModel.fetchReports()
+                }
             }
             .searchable(text: $searchText, prompt: "Buscar reporte...")
             .toolbar {

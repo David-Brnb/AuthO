@@ -44,17 +44,27 @@ struct DetailCommentView: View {
                         }
                     }
                 }
+                .refreshable {
+                    viewModel.fetchComments(commentId: comment.id)
+                }
                 
                 FloatingInputText(text: $text){
                     print("Sending comment on comment \(text)")
-//                    viewModel.createComment(/*comment: commentResponse(content: text, report_id: comment.reportID, parent_comment_id: comment.id))*/
-//                    print("Comment sent")
+                    viewModel.createComment(comment: commentResponse(content: text, report_id: comment.reportID, parent_comment_id: comment.id))
+                    viewModel.fetchComments(commentId: comment.id)
+                    text = ""
+                    print("Comment sent")
                 }
             }
             .navigationTitle("Comment")
             .navigationBarTitleDisplayMode( .inline )
             .onAppear(){
                 viewModel.fetchComments(commentId: comment.id)
+            }
+            .alert(isPresented: .constant(viewModel.error != nil)) {
+                Alert(title: Text("Error"), message: Text(viewModel.error ?? ""), dismissButton: .default(Text("OK")) {
+                    viewModel.error = nil
+                })
             }
         }
     }

@@ -25,7 +25,7 @@ struct CommentView: View {
                         HStack {
                             Text(comment.user.name)
                                 .fontWeight(.semibold)
-                            Text("2d")
+//                            Text("2d")
                         }
                         
                         VStack (alignment: .leading){
