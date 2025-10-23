@@ -15,15 +15,23 @@ struct AddReportView: View {
     @State private var description: String = ""
     @State private var category: CategoryModel?
     
+    @StateObject private var viewModel: UploadReportViewModel
+    
+    init(showAddReport: Binding<Bool>) {
+        self._showAddReport = showAddReport
+        
+        _viewModel = StateObject(wrappedValue: UploadReportViewModel())
+    }
+    
     var body: some View {
         NavigationView {
             Form{
                 Section("Titulo"){
-                    TextField("Titulo", text: $title)
+                    TextField("Titulo", text: $viewModel.title)
                 }
                 
                 Section("URL"){
-                    TextField("URL", text: $url)
+                    TextField("URL", text: $viewModel.url)
                 }
                 
                 Section("Imágen"){
@@ -45,7 +53,7 @@ struct AddReportView: View {
                 .listRowBackground(Color.clear)
                 
                 Section("Descripción"){
-                    CustomTextEditor(placeholder: "Descripción", maxCharacters: 40, text: $description)
+                    CustomTextEditor(placeholder: "Descripción", maxCharacters: 150, text: $viewModel.description)
                         .frame(height: 150)
                         
                 }
@@ -55,7 +63,7 @@ struct AddReportView: View {
                         Text("Categoria")
                         Spacer()
                         
-                        CategoryMenuView(selectedCategory: $category)
+                        CategoryMenuView(selectedCategory: $viewModel.category)
                     }
                 }
                 
