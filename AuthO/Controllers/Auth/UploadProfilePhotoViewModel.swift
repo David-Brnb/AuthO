@@ -50,7 +50,7 @@ class UploadProfilePhotoViewModel: ObservableObject {
             let user = try await APIService.shared.signUp(credentials: credentials)
             
             let loginCredentials = LoginCredentials(email: credentials.email, password: credentials.password)
-            let authResponse = try await APIService.shared.login(credentials: loginCredentials)
+            try await APIService.shared.login(credentials: loginCredentials)
             
             var profilePhotoFilename: String? = nil
             if let image = image {
@@ -58,12 +58,15 @@ class UploadProfilePhotoViewModel: ObservableObject {
                 profilePhotoFilename = uploadResponse.filename
             }
             
-            // hasta aqui todo funciona muy bien
-            
             let updateUser = try await APIService.shared.updateUserProfile(body: UpdateUserProfileBody(id:user.id, profile_pic_url: profilePhotoFilename))
             
+            
             if updateUser {
-                sessionManager.login(user: user)
+                let refreshed = await APIService.shared.refreshToken()
+                let userRefreshed = try await APIService.shared.fetchUserProfile()
+                sessionManager.login(user: userRefreshed)
+                
+                sessionManager.login(user: userRefreshed)
             } else {
                 sessionManager.logout()
             }

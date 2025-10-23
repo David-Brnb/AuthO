@@ -104,7 +104,7 @@ struct ProfileView: View {
             .ignoresSafeArea()
         }
         .onAppear(){
-            print("This is the current user \(sesion.currentUser)")
+            // nada por ahora
         }
         
     }

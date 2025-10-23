@@ -204,5 +204,53 @@ class APIService {
             return false
         }
     }
+    
+    func refreshToken() async -> Bool {
+        guard let refreshToken = KeychainService.shared.retrieve(for: "refreshToken") else {
+            return false
+        }
+        
+        
+        guard let url = baseURL?.appendingPathComponent("auth/refresh") else {
+            return false
+        }
+        
+        
+        var request = URLRequest(url: url)
+        let body = RefreshTokenInput(refreshToken: refreshToken)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        do {
+            request.httpBody = try JSONEncoder().encode(body)
+        } catch {
+            print("Error encoding body: \(error)")
+            return false
+        }
+        
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            
+            if let httpResponse = response as? HTTPURLResponse {
+                guard (200...299).contains(httpResponse.statusCode) else {
+                    print("Bad code in http response")
+                    return false
+                }
+            } else {
+                print("Response is not HTTPURLResponse")
+                return false
+            }
+            
+            let authResponse = try JSONDecoder().decode(AuthResponse.self, from: data)
+            
+            KeychainService.shared.save(token: authResponse.accessToken, for: "accessToken")
+            KeychainService.shared.save(token: authResponse.refreshToken, for: "refreshToken")
+            
+            return true
+        } catch {
+            print("Error refreshing token: \(error)")
+            return false
+        }
+    }
 }
 
