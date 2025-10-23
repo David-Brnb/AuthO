@@ -51,6 +51,7 @@ struct ReportDetailView: View {
                 
                 FloatingInputText(text: $replyText){
                     // aqui va lo que se manda en el mensaje
+                    print("sending comment on report")
                 }
             }
             .navigationTitle("Reporte")

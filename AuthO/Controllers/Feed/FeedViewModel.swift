@@ -33,7 +33,7 @@ class FeedViewModel: ObservableObject {
         Task{
             do {
                 
-                var reportsData = try await APIServiceFeed.shared.fetchReports()
+                let reportsData = try await APIServiceFeed.shared.fetchReports()
                 
                 await MainActor.run {
                     self.reports = mapDTOtoModel(reportsData)

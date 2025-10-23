@@ -17,8 +17,6 @@ struct ComentaryModel: Codable {
     let comments: [ComentaryModel]
 }
 
-import Foundation
-
 struct UserC: Codable, Identifiable {
     let id: Int
     let name: String
