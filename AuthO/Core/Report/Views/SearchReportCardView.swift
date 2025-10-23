@@ -15,14 +15,14 @@ struct SearchReportCardView: View {
     var body: some View {
         Card {
             VStack(alignment: .leading){
-                Text(report.card.titulo)
+                Text(report.card.title)
                     .font(.title.bold())
                 
-                Text(report.card.url)
+                Text(report.card.reference_url)
                     .font(.caption)
                     .foregroundStyle(.blue)
                 
-                KFImage(URL(string: report.card.imageUrl)!)
+                KFImage(URL(string: report.card.report_pic_url)!)
                     .resizable()
                     .scaledToFill()
                     .frame(width: 340, height: 170)
@@ -33,7 +33,7 @@ struct SearchReportCardView: View {
                     .shadow(color: .gray.opacity(80), radius: 5, x:0, y:0)
                     .padding(.top, 5)
                 
-                Text(report.card.descripcion)
+                Text(report.card.description)
                     .font(.subheadline)
                     .multilineTextAlignment(.leading)
                     .lineLimit(8)
@@ -44,7 +44,7 @@ struct SearchReportCardView: View {
                 Spacer()
                     .frame(height: 40)
                 
-                CategoryField(category: report.card.categoria, sideView: EmptyView())
+                CategoryField(category: report.card.category, sideView: EmptyView())
                 
                 VStack(alignment: .leading, spacing: 4){
                     Text("Campos Encontrados")
@@ -69,9 +69,9 @@ struct SearchReportCardView: View {
     }
 }
 
-#Preview {
-    SearchReportCardView(report: ExampleSeachCards.searchCards[0])
-}
+//#Preview {
+//    SearchReportCardView(report: ExampleSeachCards.searchCards[0])
+//}
 
 extension SearchReportCardView {
     

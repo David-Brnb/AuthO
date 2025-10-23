@@ -17,20 +17,22 @@ struct SearchView: View {
     @Binding var selectedIndex: Int
     @State var searchText: String = ""
     
+    @StateObject private var viewModel: FeedViewModel = FeedViewModel.shared
+    
     var body: some View {
         NavigationStack {
             VStack {
                 ScrollView{
                     if searchText.isEmpty {
-                        ForEach(ExampleCards.cards, id: \.titulo) { card in
-//                            NormalReportCardView(report: card, detail: false)
-//                                .padding(.horizontal)
-//                                .padding(.vertical, 8)
+                        ForEach(viewModel.reports, id: \.id) { card in
+                            NormalReportCardView(report: card, detail: false)
+                                .padding(.horizontal)
+                                .padding(.vertical, 8)
                         }
                         
                     } else {
                         let filteredCards = searchCards(
-                            cards: ExampleCards.cards
+                            cards: viewModel.reports
                         )
                         
                         ForEach(filteredCards, id: \.card.id) { reportSearch in
@@ -82,7 +84,7 @@ struct SearchView: View {
 
 extension SearchView {
     func searchCards(
-        cards: [CardModel],
+        cards: [ReportCardModel],
     ) -> [SearchCardModel] {
         let lowercasedSearch = searchText.lowercased()
         var results: [SearchCardModel] = []
@@ -90,19 +92,19 @@ extension SearchView {
         for card in cards {
             var relatedFields: [String] = []
             
-            if description, card.descripcion.lowercased().contains(lowercasedSearch) {
+            if description, card.description.lowercased().contains(lowercasedSearch) {
                 relatedFields.append("descripcion")
             }
             
-            if url, card.url.lowercased().contains(lowercasedSearch) {
+            if url, card.reference_url.lowercased().contains(lowercasedSearch) {
                 relatedFields.append("url")
             }
             
-            if title, card.titulo.lowercased().contains(lowercasedSearch) {
+            if title, card.title.lowercased().contains(lowercasedSearch) {
                 relatedFields.append("titulo")
             }
             
-            if category, card.categoria.name.lowercased().contains(lowercasedSearch) {
+            if category, card.category.name.lowercased().contains(lowercasedSearch) {
                 relatedFields.append("categoria")
             }
             

@@ -8,6 +8,6 @@
 import Foundation
 
 struct SearchCardModel: Codable {
-    let card: CardModel
+    let card: ReportCardModel
     let relatedFields: [String]
 }

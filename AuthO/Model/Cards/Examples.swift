@@ -292,8 +292,8 @@ struct ExampleCards {
     ]
 }
 
-struct ExampleSeachCards {
-    static let searchCards: [SearchCardModel] = [
-        SearchCardModel(card: ExampleCards.cards[0], relatedFields: ["Descripcion", "Titulo"])
-    ]
-}
+//struct ExampleSeachCards {
+//    static let searchCards: [SearchCardModel] = [
+//        SearchCardModel(card: ExampleCards.cards[0], relatedFields: ["Descripcion", "Titulo"])
+//    ]
+//}
