@@ -85,4 +85,41 @@ class APIServiceFeed {
         let commentData = try JSONDecoder().decode([CommentDTO].self, from: data)
         return commentData
     }
+    
+    func uploadComment(comment: commentResponse) async throws -> Bool {
+        guard let url = baseURL?.appendingPathComponent("comment") else {
+            return false;
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        
+        if let token = KeychainService.shared.retrieve(for: "accessToken") {
+            request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        } else {
+            return false;
+        }
+        
+        request.httpBody = try? JSONEncoder().encode(comment)
+        
+        print(request)
+        
+        let (_, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            print("No se pudo convertir la respuesta en HTTPURLResponse.")
+            return false
+        }
+
+        guard (200...299).contains(httpResponse.statusCode) else {
+            print("❌ Error HTTP: \(httpResponse.statusCode)")
+
+            // Mostrar headers (útil para debug)
+            print("📬 Headers: \(httpResponse.allHeaderFields)")
+
+            return false
+        }
+        
+        return true;
+    }
 }

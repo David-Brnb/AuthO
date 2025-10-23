@@ -9,6 +9,7 @@ import SwiftUI
 
 struct DetailCommentView: View {
     @State var comment: CommentDTO
+    @State var text = ""
     
     @StateObject private var viewModel: CommentViewModel = CommentViewModel()
     
@@ -44,8 +45,10 @@ struct DetailCommentView: View {
                     }
                 }
                 
-                FloatingInputText(text: .constant("")){
-                    print("Sending comment on comment")
+                FloatingInputText(text: $text){
+                    print("Sending comment on comment \(text)")
+//                    viewModel.createComment(/*comment: commentResponse(content: text, report_id: comment.reportID, parent_comment_id: comment.id))*/
+//                    print("Comment sent")
                 }
             }
             .navigationTitle("Comment")

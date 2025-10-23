@@ -54,3 +54,9 @@ struct CommentDTO: Codable, Identifiable {
         case user
     }
 }
+
+struct commentResponse: Codable {
+    let content: String
+    let report_id: Int
+    let parent_comment_id: Int?
+}

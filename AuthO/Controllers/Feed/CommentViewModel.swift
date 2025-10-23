@@ -41,6 +41,32 @@ class CommentViewModel: ObservableObject {
             }
         }
     }
+    
+    func createComment(comment: commentResponse){
+        guard KeychainService.shared.retrieve(for: "accessToken") != nil else {
+            self.error = "No token available"
+            return
+        }
+        
+        Task {
+            do {
+                print("commenting")
+                let commented = try await APIServiceFeed.shared.uploadComment(comment: comment)
+                
+                if commented {
+                    print("Commented h")
+                    fetchComments(commentId: comment.parent_comment_id!)
+                    
+                } else {
+                    print("No")
+                    throw APIError.custom("Error while uploading comment");
+                }
+                
+            } catch {
+                throw error;
+            }
+        }
+    }
 }
 
     
