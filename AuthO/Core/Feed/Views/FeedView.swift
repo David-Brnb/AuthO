@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct FeedView: View {
     @Binding var selectedIndex: Int
@@ -58,9 +59,17 @@ struct FeedView: View {
                         Button {
                             selectedIndex=0
                         } label: {
-                            Image(systemName: "person.circle.fill")
-                                .resizable()
-                                .frame(width: 35, height: 35)
+                            if let profilePicPath = sesion.currentUser?.profile_pic_url{
+                                KFImage(APIServiceGeneral.resolveProfileURL(from: profilePicPath))
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 35, height: 35)
+                                    .clipShape(Circle())
+                            } else {
+                                Image(systemName: "person.circle.fill")
+                                    .resizable()
+                                    .frame(width: 35, height: 35)
+                            }
                                 
                         }
                         .tint(Color(.systemBlue))
