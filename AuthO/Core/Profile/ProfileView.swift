@@ -38,7 +38,7 @@ struct ProfileView: View {
                         .padding(.horizontal)
                         
                         if viewModel.reports.isEmpty{
-                            EmptyView()
+                            CustomEmptyView()
                         } else {
                             ForEach(viewModel.reports, id: \.id) { card in
                                 ReportCard(report: card)

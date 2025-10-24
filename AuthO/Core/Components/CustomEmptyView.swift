@@ -1,5 +1,5 @@
 //
-//  EmptyView.swift
+//  CustomEmptyView.swift
 //  AuthO
 //
 //  Created by Leoni Bernabe on 23/10/25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct EmptyView: View {
+struct CustomEmptyView: View {
     var body: some View {
         VStack{
             Spacer()
@@ -31,5 +31,5 @@ struct EmptyView: View {
 }
 
 #Preview {
-    EmptyView()
+    CustomEmptyView()
 }

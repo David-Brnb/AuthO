@@ -63,11 +63,11 @@ struct AddReportView: View {
                 
                 Section("Categoría"){
                     HStack{
-                        Text("Categoria")
                         Spacer()
-                        
                         CategoryMenuView(selectedCategory: $viewModel.category)
+                        Spacer()
                     }
+                    
                 }
                 
                 Button{

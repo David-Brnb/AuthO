@@ -25,7 +25,7 @@ struct SearchView: View {
                 ScrollView{
                     
                     if viewModel.reports.isEmpty {
-                        EmptyView()
+                        CustomEmptyView()
                     } else {
                         if searchText.isEmpty {
                             ForEach(viewModel.reports, id: \.id) { card in

@@ -23,7 +23,7 @@ struct FeedView: View {
                         .padding(.top, 170)
                     
                     if viewModel.reports.isEmpty {
-                        EmptyView()
+                        CustomEmptyView()
                     } else {
                         let filteredCards = selectedCategory == nil
                         ? viewModel.reports
