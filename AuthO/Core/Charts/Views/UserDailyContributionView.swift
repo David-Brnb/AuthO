@@ -9,21 +9,23 @@ import SwiftUI
 import Charts
 
 struct UserDailyContributionView: View {
+    @StateObject private var viewModel = ChartsViewModel.shared
+    @EnvironmentObject var sesion: SessionManager
     @State private var showChart: Bool = true
     
     var body: some View {
         NavigationStack {
             Form {
-                Text("Tu día con mas contribuciones del més con fue de \(Text("\(ChartDataExamples.mostContributedDay.contributions) reportes").bold()) el \(ChartDataExamples.mostContributedDay.day,  format: Date.FormatStyle().day().month())")
+                Text("Tu día con mas contribuciones del més con fue de \(Text("\(viewModel.mostContributedDay().count) reportes").bold()) el \(viewModel.mostContributedDay().day,  format: Date.FormatStyle().day().month())")
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.clear)
                 
                 Section {
                     Chart {
-                        ForEach(ChartDataExamples.userContribution, id: \.id) { chartPoint in
+                        ForEach(viewModel.userBarChartData, id: \.id) { chartPoint in
                             BarMark(
                                 x: .value("day", chartPoint.day),
-                                y: .value("contribution", chartPoint.contributions),
+                                y: .value("contribution", chartPoint.count),
                                 width: .fixed(15)
                             )
                             .opacity(Calendar.current.isDateInToday(chartPoint.day) ? 1 : 0.5)
@@ -46,8 +48,25 @@ struct UserDailyContributionView: View {
                 }
                 
                 Section {
-                    Toggle("Mostrar reportes rechazados", isOn: $showChart)
+                    Toggle("Mostrar reportes rechazados o pendientes", isOn: $showChart)
                 }
+            }
+            .refreshable {
+                if showChart {
+                    viewModel.fetchUserBarChartData(userId: sesion.currentUser!.id)
+                    
+                } else {
+                    viewModel.fetchUserBarChartDataAccepted(userId: sesion.currentUser!.id)
+                }
+            }
+            .onChange(of: showChart) { oldValue, newValue in
+                if newValue {
+                    viewModel.fetchUserBarChartData(userId: sesion.currentUser!.id)
+                    
+                } else {
+                    viewModel.fetchUserBarChartDataAccepted(userId: sesion.currentUser!.id)
+                }
+                
             }
             .navigationTitle("User Daily Contribution")
             .navigationBarTitleDisplayMode(.inline)

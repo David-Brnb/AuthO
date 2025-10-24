@@ -85,6 +85,7 @@ struct ChartView: View {
                 if !refreshed {
                     sesion.logout()
                 }
+                viewModel.fetchUserBarChartData(userId: sesion.currentUser!.id)
             }
         }
     }
@@ -136,7 +137,7 @@ extension ChartView {
     
     var userDailyContribution: some View {
         VStack {
-            Text("Tu día con mas contribuciones del més con fue de \(Text("\(ChartDataExamples.mostContributedDay.contributions) reportes").bold()) el \(ChartDataExamples.mostContributedDay.day,  format: Date.FormatStyle().day().month())")
+            Text("Tu día con mas contribuciones del més con fue de \(Text("\(viewModel.mostContributedDay().count) reportes").bold()) el \(viewModel.mostContributedDay().day,  format: Date.FormatStyle().day().month())")
                 .listRowSeparator(.hidden)
             
             Chart {

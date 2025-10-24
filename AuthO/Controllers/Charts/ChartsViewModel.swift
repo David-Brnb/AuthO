@@ -13,7 +13,7 @@ class ChartsViewModel: ObservableObject {
     
     @Published var generalBarChartData: [DailyContributionModel] = []
     @Published var pieChartData: [MostLikedPageModel] = []
-    @Published var userBarChartData: [UserDailyContributionModel] = []
+    @Published var userBarChartData: [DailyContributionModel] = []
     @Published var userDailyLikes: [UserDailyLikesModel] = []
     
     @Published var isLoading: Bool = false
@@ -116,6 +116,62 @@ class ChartsViewModel: ObservableObject {
         }
     }
     
+    func fetchUserBarChartData(userId: Int) {
+        guard KeychainService.shared.retrieve(for: "accessToken") != nil else {
+            self.error = "No token available"
+            return
+        }
+        
+        isLoading = true
+        error = nil
+        
+        Task {
+            do {
+                let data = try await APIServiceCharts.shared.fetchUserBarChartData(userId: userId)
+                
+                await MainActor.run {
+                    self.userBarChartData = data
+                    self.isLoading = false
+                }
+                
+            } catch {
+                await MainActor.run {
+                    print("Error fetching user chart data: \(error.localizedDescription)")
+                    self.error = error.localizedDescription
+                    self.isLoading = false
+                }
+            }
+        }
+    }
+    
+    func fetchUserBarChartDataAccepted(userId: Int) {
+        guard KeychainService.shared.retrieve(for: "accessToken") != nil else {
+            self.error = "No token available"
+            return
+        }
+        
+        isLoading = true
+        error = nil
+        
+        Task {
+            do {
+                let data = try await APIServiceCharts.shared.fetchUserBarChartDataAccepted(userId: userId)
+                
+                await MainActor.run {
+                    self.userBarChartData = data
+                    self.isLoading = false
+                }
+                
+            } catch {
+                await MainActor.run {
+                    print("Error fetching user chart data: \(error.localizedDescription)")
+                    self.error = error.localizedDescription
+                    self.isLoading = false
+                }
+            }
+        }
+    }
+    
     func averageWeeklyContributions() -> Int {
         let data = generalBarChartData
         guard !data.isEmpty else { return 0 }
@@ -141,6 +197,13 @@ class ChartsViewModel: ObservableObject {
         return (Double(maxLikes) / Double(pieChartData.reduce(0) { $0 + $1.likes })) * 100
     }
     
+    func mostContributedDay() -> DailyContributionModel {
+        if userBarChartData.isEmpty {
+            return DailyContributionModel(day: Date(), count: 0)
+        } else {
+            return userBarChartData.max(by: { $0.count < $1.count })!
+        }
+    }
     
 }
 

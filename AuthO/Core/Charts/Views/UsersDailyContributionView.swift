@@ -45,7 +45,7 @@ struct UsersDailyContributionView: View {
                 }
                 
                 Section {
-                    Toggle("Mostrar reportes sin aceptar", isOn: $showChart)
+                    Toggle("Mostrar reportes rechazados o pendientes", isOn: $showChart)
                 }
             }
             .refreshable {
