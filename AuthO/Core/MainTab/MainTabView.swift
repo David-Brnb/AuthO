@@ -15,24 +15,28 @@ struct MainTabView: View {
             ProfileView()
                 .tabItem {
                     Image(systemName: "person")
+                    Text("Perfil")
                 }
                 .tag(0)
             
             FeedView(selectedIndex: $selectedIndex)
                 .tabItem{
                     Image(systemName: "text.document")
+                    Text("Reportes")
                 }
                 .tag(1)
             
             ChartView(selectedIndex: $selectedIndex)
                 .tabItem{
                     Image(systemName: "chart.pie")
+                    Text("Gráficas")
                 }
                 .tag(2)
             
             SearchView(selectedIndex: $selectedIndex)
                 .tabItem{
                     Image(systemName: "magnifyingglass")
+                    Text("Buscar")
                 }
                 .tag(3)
         }

@@ -44,9 +44,9 @@ struct NormalReportCardView: View {
                 
                 Spacer()
                 
-//                CategoryField(category: report.category, sideView: !detail ? AnyView(LikeView(likes: report.likes){}) : AnyView(CommentsView(comments: report.comments.count){}))
+                CategoryField(category: report.category, sideView: !detail ? AnyView(LikeView(likes: 0){}) : AnyView(EmptyView()))
                 
-                CategoryField(category: report.category, sideView: EmptyView())
+//                CategoryField(category: report.category, sideView: EmptyView())
                 
                 
                 
