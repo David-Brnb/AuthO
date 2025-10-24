@@ -8,9 +8,6 @@
 import SwiftUI
 
 struct CategoriesView: View {
-    let items = ["Uno", "Dos", "Tres", "Cuatro", "Cinco", "Seis", "Siete"]
-    let categories = ExampleCategories.all
-    
     @State var selectedCategory: CategoryModel?
     
     @StateObject private var categoryVM = CategoryViewModel.shared

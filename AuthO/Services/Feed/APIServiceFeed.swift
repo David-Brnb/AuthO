@@ -151,15 +151,19 @@ class APIServiceFeed {
         }
 
         guard (200...299).contains(httpResponse.statusCode) else {
-            print("❌ Error HTTP: \(httpResponse.statusCode)")
+            print("Error HTTP: \(httpResponse.statusCode)")
 
             // Mostrar headers (útil para debug)
-            print("📬 Headers: \(httpResponse.allHeaderFields)")
+            print("Headers: \(httpResponse.allHeaderFields)")
 
             return false
         }
         
         return true;
         
+    }
+    
+    func fetchLikesReport(userId: Int){
+        // aqui implementar la funcion de likes o mejor ya mañana
     }
 }

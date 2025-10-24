@@ -13,6 +13,8 @@ class FeedViewModel: ObservableObject {
     static let shared = FeedViewModel()
     
     @Published var reports: [ReportCardModel] = []
+    @Published var likedReports: Set<Int> = []
+    @Published var likedComments: Set<Int> = []
     @Published var isLoading: Bool = false
     @Published var error: String?
     

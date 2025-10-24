@@ -19,7 +19,7 @@ struct SearchFiltersView: View {
         NavigationStack {
             Form {
                 Section {
-                    Toggle("title", isOn: $title)
+                    Toggle("Título", isOn: $title)
                 }
                 
                 Section {
@@ -31,10 +31,10 @@ struct SearchFiltersView: View {
                 }
                 
                 Section {
-                    Toggle("Category", isOn: $category)
+                    Toggle("Categoría", isOn: $category)
                 }
             }
-            .navigationTitle("Search Filters")
+            .navigationTitle("Filtros de Búsqueda")
             .navigationBarTitleDisplayMode(.inline)
         }
         

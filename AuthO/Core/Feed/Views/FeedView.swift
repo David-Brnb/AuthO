@@ -52,7 +52,7 @@ struct FeedView: View {
                 .refreshable {
                     viewModel.fetchReports()
                 }
-                .navigationTitle("Feed")
+                .navigationTitle("Reportes")
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
                         Button {

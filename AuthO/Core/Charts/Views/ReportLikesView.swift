@@ -10,7 +10,7 @@ import Charts
 
 struct ReportLikesView: View {
     @State private var selectedOption = 0
-    let options = ["Pie Chart", "Bar Chart", "Single Bar"]
+    let options = ["Pay", "Barras", "Barra"]
     
     var body: some View {
         NavigationStack {
