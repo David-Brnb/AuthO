@@ -12,7 +12,7 @@ class APIServiceFeed {
     private let baseURL = URL(string: "http://localhost:3001/")
     
     func fetchReports() async throws -> [ReportCardModelDTO] {
-        guard let url = baseURL?.appendingPathComponent("reports") else {
+        guard let url = baseURL?.appendingPathComponent("reports/status/3") else {
             throw APIError.invalidURL
         }
         

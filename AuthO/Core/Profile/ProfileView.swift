@@ -13,6 +13,14 @@ struct ProfileView: View {
     @State private var navigateToFAQs = false
     @State private var navigateToCategories = false
     
+    @StateObject private var viewModel: ProfileViewModel
+    
+    init(){
+        _viewModel = .init(wrappedValue: ProfileViewModel(userId: 0))
+    }
+    
+    
+    
     var body: some View {
         NavigationStack{
             VStack{
@@ -28,8 +36,9 @@ struct ProfileView: View {
                         .font(.callout)
                         .foregroundStyle(.secondary)
                         .padding(.horizontal)
+                        
                 
-                        ForEach(ExampleCards.cards, id: \.titulo) { card in
+                        ForEach(viewModel.reports, id: \.id) { card in
                             ReportCard(report: card)
                                 .padding(.horizontal)
                                 .padding(.vertical, 8)
@@ -44,6 +53,9 @@ struct ProfileView: View {
                     
                 }
                 .scrollIndicators(.hidden)
+                .refreshable {
+                    viewModel.fetchData()
+                }
                     
             }
             .navigationTitle("O-Fraud")
@@ -104,6 +116,8 @@ struct ProfileView: View {
             .ignoresSafeArea()
             .onAppear(){
                 _ = FeedViewModel.shared
+                viewModel.updateUserId(id: sesion.currentUser!.id)
+                viewModel.fetchData()
             }
         }
         
@@ -146,7 +160,7 @@ extension ProfileView {
                     VStack{
                         Text("8")
                         Text("Reportes")
-                        Text("Totales")
+                        Text("Aceptador")
                     }
                     
                     Divider()
@@ -164,7 +178,7 @@ extension ProfileView {
                     VStack{
                         Text("8")
                         Text("Reportes")
-                        Text("Totales")
+                        Text("Rechazados")
                     }
                 }
                 

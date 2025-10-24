@@ -8,21 +8,27 @@
 import SwiftUI
 
 struct ReportCard: View {
-    let report: CardModel
+    let report: ReportCardModel
     
-    let accepted = true
+    var accepted = true
+    
+    init(report: ReportCardModel) {
+        self.report = report
+        accepted = report.status_id == 3
+        print(report)
+    }
     
     var body: some View {
         Card {
             VStack(alignment: .leading){
-                Text(report.titulo)
+                Text(report.title)
                     .font(.title.bold())
                 
-                Text(report.url)
+                Text(report.reference_url)
                     .font(.caption)
                     .foregroundStyle(.blue)
                 
-                Text(report.descripcion)
+                Text(report.description)
                     .font(.subheadline)
                     .multilineTextAlignment(.leading)
                     .lineLimit(8)
@@ -32,7 +38,7 @@ struct ReportCard: View {
                 
                 Spacer()
                 
-                CategoryField(category: report.categoria, sideView: status)
+                CategoryField(category: report.category, sideView: status)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
@@ -44,9 +50,6 @@ struct ReportCard: View {
 
 let category = "Casa"
 let icon = "house"
-#Preview {
-    ReportCard(report: ExampleCards.cards.first!)
-}
 
 
 extension ReportCard {

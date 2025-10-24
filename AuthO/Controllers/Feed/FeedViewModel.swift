@@ -50,7 +50,7 @@ class FeedViewModel: ObservableObject {
         }
     }
     
-    private func mapDTOtoModel(_ dtos: [ReportCardModelDTO]) -> [ReportCardModel] {
+    func mapDTOtoModel(_ dtos: [ReportCardModelDTO]) -> [ReportCardModel] {
         CategoryViewModel.shared.fetchCategories()
         let categories = CategoryViewModel.shared.categories
         
