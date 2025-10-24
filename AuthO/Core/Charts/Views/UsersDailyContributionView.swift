@@ -63,7 +63,7 @@ struct UsersDailyContributionView: View {
                     viewModel.fetchBarChartData()
                 }
             }
-            .navigationTitle("Users Daily Contribution")
+            .navigationTitle("Contribuciones diarias de los usuarios")
             .navigationBarTitleDisplayMode(.inline)
         }
         

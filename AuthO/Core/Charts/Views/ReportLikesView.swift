@@ -44,7 +44,7 @@ struct ReportLikesView: View {
                 
             }
             .padding(.horizontal)
-            .navigationTitle("Reports Impact")
+            .navigationTitle("Impacto de reportes")
             .navigationBarTitleDisplayMode(.inline)
         }
     }

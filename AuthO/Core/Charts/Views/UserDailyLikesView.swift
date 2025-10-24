@@ -56,7 +56,7 @@ struct UserDailyLikesView: View {
                     .padding(2)
                 }
             }
-            .navigationTitle("User Daily Impact")
+            .navigationTitle("Impacto de reportes propios")
             .navigationBarTitleDisplayMode(.inline)
         }
     }

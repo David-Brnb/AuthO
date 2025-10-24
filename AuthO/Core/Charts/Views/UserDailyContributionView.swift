@@ -16,7 +16,7 @@ struct UserDailyContributionView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Text("Tu día con mas contribuciones del més con fue de \(Text("\(viewModel.mostContributedDay().count) reportes").bold()) el \(viewModel.mostContributedDay().day,  format: Date.FormatStyle().day().month())")
+                Text("Tu día con mas contribuciones de la semana fue de \(Text("\(viewModel.mostContributedDay().count) reportes").bold()) el \(viewModel.mostContributedDay().day,  format: Date.FormatStyle().day().month())")
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.clear)
                 
@@ -68,7 +68,7 @@ struct UserDailyContributionView: View {
                 }
                 
             }
-            .navigationTitle("User Daily Contribution")
+            .navigationTitle("Contribuciones diarias")
             .navigationBarTitleDisplayMode(.inline)
         }
     }
