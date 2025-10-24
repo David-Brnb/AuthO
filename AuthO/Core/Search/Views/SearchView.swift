@@ -17,6 +17,8 @@ struct SearchView: View {
     @Binding var selectedIndex: Int
     @State var searchText: String = ""
     
+    @EnvironmentObject var sesion: SessionManager
+    
     @StateObject private var viewModel: FeedViewModel = FeedViewModel.shared
     
     var body: some View {
@@ -80,6 +82,15 @@ struct SearchView: View {
                 SearchFiltersView(description: $description, url: $url, title: $title, category: $category)
             }
             
+        }
+        .onAppear(){
+            Task {
+                let refreshed = await APIService.shared.refreshToken()
+                
+                if !refreshed {
+                    sesion.logout()
+                }
+            }
         }
     }
 }

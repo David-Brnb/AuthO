@@ -123,6 +123,13 @@ struct ProfileView: View {
                 viewModel.updateUserId(id: sesion.currentUser!.id)
                 viewModel.fetchData()
                 viewModel.fetchReports()
+                Task {
+                    let refreshed = await APIService.shared.refreshToken()
+                    
+                    if !refreshed {
+                        sesion.logout()
+                    }
+                }
             }
         }
         

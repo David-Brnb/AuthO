@@ -13,6 +13,8 @@ struct FeedView: View {
     @State private var selectedCategory: CategoryModel? = nil
     @State private var selectedReport: ReportCardModel? = nil
     
+    @EnvironmentObject var sesion: SessionManager
+    
     @StateObject private var viewModel: FeedViewModel = FeedViewModel.shared
     
     var body: some View {
@@ -93,6 +95,15 @@ struct FeedView: View {
                     print("NO hay datos")
                     
                     viewModel.fetchReports()
+                }
+            }
+        }
+        .onAppear(){
+            Task {
+                let refreshed = await APIService.shared.refreshToken()
+                
+                if !refreshed {
+                    sesion.logout()
                 }
             }
         }

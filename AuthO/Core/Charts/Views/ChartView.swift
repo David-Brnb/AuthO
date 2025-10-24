@@ -10,6 +10,8 @@ import Charts
 
 struct ChartView: View {
     @Binding var selectedIndex: Int
+    @EnvironmentObject var sesion: SessionManager
+    
     var body: some View {
         NavigationStack {
             Form {
@@ -64,6 +66,15 @@ struct ChartView: View {
                     .tint(Color(.systemBlue))
                 }
                 
+            }
+        }
+        .onAppear(){
+            Task {
+                let refreshed = await APIService.shared.refreshToken()
+                
+                if !refreshed {
+                    sesion.logout()
+                }
             }
         }
     }
