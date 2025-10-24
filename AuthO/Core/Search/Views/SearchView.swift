@@ -23,26 +23,30 @@ struct SearchView: View {
         NavigationStack {
             VStack {
                 ScrollView{
-                    if searchText.isEmpty {
-                        ForEach(viewModel.reports, id: \.id) { card in
-                            NormalReportCardView(report: card, detail: false)
-                                .padding(.horizontal)
-                                .padding(.vertical, 8)
-                        }
-                        
-                    } else {
-                        let filteredCards = searchCards(
-                            cards: viewModel.reports
-                        )
-                        
-                        ForEach(filteredCards, id: \.card.id) { reportSearch in
-                            SearchReportCardView(report: reportSearch)
-                                .padding(.horizontal)
-                                .padding(.vertical, 8)
-                        }
-                        
-                    }
                     
+                    if viewModel.reports.isEmpty {
+                        EmptyView()
+                    } else {
+                        if searchText.isEmpty {
+                            ForEach(viewModel.reports, id: \.id) { card in
+                                NormalReportCardView(report: card, detail: false)
+                                    .padding(.horizontal)
+                                    .padding(.vertical, 8)
+                            }
+                            
+                        } else {
+                            let filteredCards = searchCards(
+                                cards: viewModel.reports
+                            )
+                            
+                            ForEach(filteredCards, id: \.card.id) { reportSearch in
+                                SearchReportCardView(report: reportSearch)
+                                    .padding(.horizontal)
+                                    .padding(.vertical, 8)
+                            }
+                            
+                        }
+                    }
                 }
                 .refreshable {
                     viewModel.fetchReports()

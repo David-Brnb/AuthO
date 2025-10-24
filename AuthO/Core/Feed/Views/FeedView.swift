@@ -22,27 +22,30 @@ struct FeedView: View {
                     Divider()
                         .padding(.top, 170)
                     
-                    let filteredCards = selectedCategory == nil
-                    ? viewModel.reports
-                        : viewModel.reports.filter { $0.category == selectedCategory }
-                    
-                    ForEach(filteredCards, id: \.id) { card in
+                    if viewModel.reports.isEmpty {
+                        EmptyView()
+                    } else {
+                        let filteredCards = selectedCategory == nil
+                        ? viewModel.reports
+                            : viewModel.reports.filter { $0.category == selectedCategory }
                         
-                        Button {
-                            selectedReport = card
-                        } label : {
-                            NormalReportCardView(report: card, detail: false)
-                                .padding(.horizontal)
-                                .padding(.vertical, 8)
+                        ForEach(filteredCards, id: \.id) { card in
+                            
+                            Button {
+                                selectedReport = card
+                            } label : {
+                                NormalReportCardView(report: card, detail: false)
+                                    .padding(.horizontal)
+                                    .padding(.vertical, 8)
+                            }
+                            .buttonStyle(.plain)
+                            
+                            
                         }
-                        .buttonStyle(.plain)
                         
-                        
+                        Spacer()
+                            .frame(height: 90)
                     }
-                    
-                    Spacer()
-                        .frame(height: 90)
-                    
                 }
                 .refreshable {
                     viewModel.fetchReports()

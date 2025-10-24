@@ -8,13 +8,9 @@
 import Foundation
 import Combine
 
-@MainActor
 class ProfileViewModel: ObservableObject {
     @Published var reports: [ReportCardModel] = []
-    
-    @Published var accepted: Int = 0
-    @Published var rejected: Int = 0
-    @Published var pending: Int = 0
+    @Published var stats: ReportStats = ReportStats(totalReports: 0, acceptedReports: 0, rejectedReports: 0)
     
     @Published var isLoading: Bool = false
     @Published var error: String?
@@ -58,7 +54,32 @@ class ProfileViewModel: ObservableObject {
         }
     }
     
-    func fetchReports() async {
+    func fetchReports() {
+        guard KeychainService.shared.retrieve(for: "accessToken") != nil else {
+            self.error = "No token available"
+            return
+        }
         
+        isLoading = true
+        error = nil
+        
+        Task{
+            do {
+                
+                let reportStats = try await APIServiceProfile.shared.fetchUserStats(id: userId)
+                
+                await MainActor.run {
+                    self.stats = reportStats
+                    self.isLoading = false
+                }
+                
+            } catch {
+                await MainActor.run {
+                    print("Error fetching reports: \(error.localizedDescription)")
+                    self.error = error.localizedDescription
+                    self.isLoading = false
+                }
+            }
+        }
     }
 }

@@ -36,5 +36,30 @@ class APIServiceProfile {
         return reportData
     }
     
+    func fetchUserStats(id: Int) async throws -> ReportStats{
+        guard let url = baseURL?.appendingPathComponent("reports/stats/\(id)") else {
+            throw APIError.invalidURL
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        
+        if let token = KeychainService.shared.retrieve(for: "accessToken") {
+            request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        } else {
+            throw APIError.unauthorized
+        }
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+            throw APIError.invalidResponse
+        }
+        
+        let reportStats = try JSONDecoder().decode(ReportStats.self, from: data)
+        return reportStats
+    }
+    
     
 }

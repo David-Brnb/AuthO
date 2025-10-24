@@ -37,15 +37,18 @@ struct ProfileView: View {
                         .foregroundStyle(.secondary)
                         .padding(.horizontal)
                         
-                
-                        ForEach(viewModel.reports, id: \.id) { card in
-                            ReportCard(report: card)
-                                .padding(.horizontal)
-                                .padding(.vertical, 8)
+                        if viewModel.reports.isEmpty{
+                            EmptyView()
+                        } else {
+                            ForEach(viewModel.reports, id: \.id) { card in
+                                ReportCard(report: card)
+                                    .padding(.horizontal)
+                                    .padding(.vertical, 8)
+                            }
+                            
+                            Spacer()
+                                .frame(height: 90)
                         }
-                        
-                        Spacer()
-                            .frame(height: 90)
                         
                     }
                     .padding(.horizontal)
@@ -55,6 +58,7 @@ struct ProfileView: View {
                 .scrollIndicators(.hidden)
                 .refreshable {
                     viewModel.fetchData()
+                    viewModel.fetchReports()
                 }
                     
             }
@@ -118,6 +122,7 @@ struct ProfileView: View {
                 _ = FeedViewModel.shared
                 viewModel.updateUserId(id: sesion.currentUser!.id)
                 viewModel.fetchData()
+                viewModel.fetchReports()
             }
         }
         
@@ -158,16 +163,16 @@ extension ProfileView {
             VStack(alignment: .center){
                 HStack(spacing: 25){
                     VStack{
-                        Text("8")
+                        Text("\(viewModel.stats.acceptedReports)")
                         Text("Reportes")
-                        Text("Aceptador")
+                        Text("Aceptados")
                     }
                     
                     Divider()
                         .frame(height: 60)
                     
                     VStack{
-                        Text("8")
+                        Text("\(viewModel.stats.totalReports)")
                         Text("Reportes")
                         Text("Totales")
                     }
@@ -176,7 +181,7 @@ extension ProfileView {
                         .frame(height: 60)
                     
                     VStack{
-                        Text("8")
+                        Text("\(viewModel.stats.rejectedReports)")
                         Text("Reportes")
                         Text("Rechazados")
                     }
