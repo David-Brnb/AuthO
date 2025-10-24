@@ -23,7 +23,7 @@ struct NormalReportCardView: View {
                     .font(.caption)
                     .foregroundStyle(.blue)
                 
-                KFImage(URL(string: report.report_pic_url)!)
+                KFImage(APIServiceGeneral.resolveProfileURL(from: report.report_pic_url))
                     .resizable()
                     .scaledToFill()
                     .frame(width: 340, height: 170)

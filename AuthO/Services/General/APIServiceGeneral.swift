@@ -6,11 +6,25 @@
 //
 
 import Foundation
+import UIKit
 
 class APIServiceGeneral {
     private init() {}
     
     static let baseURL = URL(string: "http://localhost:3001/")!
+    
+    static func resolveProfileURL(from path: String) -> URL? {
+        
+        if let url = URL(string: path),
+           let scheme = url.scheme,
+           scheme == "http" || scheme == "https",
+           UIApplication.shared.canOpenURL(url) {
+            
+            return url
+        }
+        
+        return APIServiceGeneral.baseURL.appendingPathComponent("file/download/\(path)")
+    }
     
     static func handleResponse(data: Data?, response: URLResponse?, error: Error?) -> Result<Data, APIError> {
         if let error = error {

@@ -15,7 +15,7 @@ struct CommentView: View {
         Card {
             VStack(alignment: .leading){
                 HStack (alignment: .top){
-                    KFImage(URL(string: comment.user.profilePicURL))
+                    KFImage(APIServiceGeneral.resolveProfileURL(from: comment.user.profilePicURL))
                         .resizable()
                         .scaledToFill()
                         .clipShape(Circle())

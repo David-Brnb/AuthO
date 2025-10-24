@@ -137,8 +137,7 @@ extension ProfileView {
     var headerView: some View {
         Group{
             if let profilePicPath = sesion.currentUser?.profile_pic_url{
-                let url = APIServiceGeneral.baseURL.appendingPathComponent("file/download/\(profilePicPath)")
-                KFImage(url)
+                KFImage(APIServiceGeneral.resolveProfileURL(from: profilePicPath))
                     .resizable()
                     .scaledToFill()
                     .frame(width: 120, height: 120)
