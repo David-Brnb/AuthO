@@ -9,31 +9,33 @@ import SwiftUI
 import Charts
 
 struct UserDailyLikesView: View {
+    @StateObject private var viewModel = ChartsViewModel.shared
+    @EnvironmentObject var sesion: SessionManager
+    
     var body: some View {
         NavigationStack {
             Form {
-                Text("Mediante tus reportes has ayudado a  \(Text("más de \(ChartDataExamples.totalLikesReports) personas").bold())")
+                Text("Mediante tus reportes has ayudado a  \(Text("más de \(viewModel.getTotalUserLikes()) personas").bold())")
                     .listRowSeparator(.hidden)
-                    .listRowBackground(Color.clear)
                 
                 Section {
                     Chart {
-                        ForEach(ChartDataExamples.userDailyLikes, id: \.id) { chartPoint in
+                        ForEach(viewModel.userDailyLikes, id: \.id) { chartPoint in
                             LineMark(
                                 x: .value("day", chartPoint.day),
-                                y: .value("contribution", chartPoint.likes),
+                                y: .value("contribution", chartPoint.like_count),
                             )
                             .opacity(Calendar.current.isDateInToday(chartPoint.day) ? 1 : 0.5)
                             
                             AreaMark(
                                 x: .value("day", chartPoint.day),
-                                y: .value("contribution", chartPoint.likes),
+                                y: .value("contribution", chartPoint.like_count),
                             )
                             .opacity(0.2)
                             
                             PointMark(
                                 x: .value("day", chartPoint.day),
-                                y: .value("contribution", chartPoint.likes)
+                                y: .value("contribution", chartPoint.like_count)
                             )
                             .symbol(.circle)
                             .symbolSize(50)
@@ -55,6 +57,9 @@ struct UserDailyLikesView: View {
                     }
                     .padding(2)
                 }
+            }
+            .refreshable {
+                viewModel.fetchLikesReportsUser(userId: sesion.currentUser!.id)
             }
             .navigationTitle("Impacto de reportes propios")
             .navigationBarTitleDisplayMode(.inline)

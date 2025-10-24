@@ -172,6 +172,34 @@ class ChartsViewModel: ObservableObject {
         }
     }
     
+    func fetchLikesReportsUser(userId: Int) {
+        guard KeychainService.shared.retrieve(for: "accessToken") != nil else {
+            self.error = "No token available"
+            return
+        }
+        
+        isLoading = true
+        error = nil
+        
+        Task {
+            do {
+                let data = try await APIServiceCharts.shared.fetchUserReportLIkes(userID: userId)
+                
+                await MainActor.run {
+                    self.userDailyLikes = data
+                    self.isLoading = false
+                }
+                
+            } catch {
+                await MainActor.run {
+                    print("Error fetching user chart likes data: \(error.localizedDescription)")
+                    self.error = error.localizedDescription
+                    self.isLoading = false
+                }
+            }
+        }
+    }
+    
     func averageWeeklyContributions() -> Int {
         let data = generalBarChartData
         guard !data.isEmpty else { return 0 }
@@ -203,6 +231,10 @@ class ChartsViewModel: ObservableObject {
         } else {
             return userBarChartData.max(by: { $0.count < $1.count })!
         }
+    }
+    
+    func getTotalUserLikes() -> Int {
+        userDailyLikes.reduce(0) { $0 + $1.like_count }
     }
     
 }

@@ -86,6 +86,7 @@ struct ChartView: View {
                     sesion.logout()
                 }
                 viewModel.fetchUserBarChartData(userId: sesion.currentUser!.id)
+                viewModel.fetchLikesReportsUser(userId: sesion.currentUser!.id)
             }
         }
     }
@@ -160,20 +161,20 @@ extension ChartView {
     
     var userDailyLikes: some View {
         VStack {
-            Text("Mediante tus reportes has ayudado a  \(Text("más de \(ChartDataExamples.totalLikesReports) personas").bold())")
+            Text("Mediante tus reportes has ayudado a  \(Text("más de \(viewModel.getTotalUserLikes()) personas").bold())")
                 .listRowSeparator(.hidden)
             
             Chart {
                 ForEach(ChartDataExamples.userDailyLikes, id: \.id) { chartPoint in
                     LineMark(
                         x: .value("day", chartPoint.day),
-                        y: .value("contribution", chartPoint.likes),
+                        y: .value("contribution", chartPoint.like_count),
                     )
                     .opacity(Calendar.current.isDateInToday(chartPoint.day) ? 1 : 0.5)
                     
                     PointMark(
                         x: .value("day", chartPoint.day),
-                        y: .value("contribution", chartPoint.likes)
+                        y: .value("contribution", chartPoint.like_count)
                     )
                     .symbol(.circle)
                     .symbolSize(50) 
