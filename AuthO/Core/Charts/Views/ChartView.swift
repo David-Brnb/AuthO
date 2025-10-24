@@ -11,6 +11,7 @@ import Kingfisher
 
 struct ChartView: View {
     @Binding var selectedIndex: Int
+    @StateObject private var viewModel = ChartsViewModel.shared
     @EnvironmentObject var sesion: SessionManager
     
     var body: some View {
@@ -84,6 +85,8 @@ struct ChartView: View {
                 if !refreshed {
                     sesion.logout()
                 }
+                viewModel.fetchUserBarChartData(userId: sesion.currentUser!.id)
+                viewModel.fetchLikesReportsUser(userId: sesion.currentUser!.id)
             }
         }
     }
@@ -96,7 +99,7 @@ struct ChartView: View {
 extension ChartView {
     var usersDailyContributions: some View {
         VStack {
-            Text("El promedio de contribuciones diarias en la semana fue de \(Text("30 al día").bold()) dentro de la aplicación")
+            Text("El promedio de contribuciones diarias en la semana fue de \(Text("\(viewModel.averageWeeklyContributions()) al día").bold()) dentro de la aplicación")
                 .listRowSeparator(.hidden)
             
             Chart {
@@ -118,10 +121,10 @@ extension ChartView {
     
     var mostLikedReport: some View {
         HStack {
-            Text("La pagina del reporte con más likes fue \(Text(ChartDataExamples.mostLikedReport!.title).foregroundColor(.blue)) con un total de \(Text("\(String(format: "%.2f", ChartDataExamples.mostLikedPercentaje))%").bold()) del total")
+            Text("La pagina del reporte con más likes fue \(Text(viewModel.mostReportedPage()).foregroundColor(.blue)) con un total de \(Text("\(String(format: "%.2f", viewModel.mostReportedPagePercentage()))%").bold()) del total")
                 .listRowSeparator(.hidden)
             
-            Chart(ChartDataExamples.likedReports, id: \.id) { dataItem in
+            Chart(viewModel.pieChartData, id: \.id) { dataItem in
                 SectorMark(angle: .value("Type", dataItem.likes),
                            innerRadius: .ratio(0.5),
                            angularInset: 0.5)
@@ -135,7 +138,7 @@ extension ChartView {
     
     var userDailyContribution: some View {
         VStack {
-            Text("Tu día con mas contribuciones del més con fue de \(Text("\(ChartDataExamples.mostContributedDay.contributions) reportes").bold()) el \(ChartDataExamples.mostContributedDay.day,  format: Date.FormatStyle().day().month())")
+            Text("Tu día con mas contribuciones de la semana fue de \(Text("\(viewModel.mostContributedDay().count) reportes").bold()) el \(viewModel.mostContributedDay().day,  format: Date.FormatStyle().day().month())")
                 .listRowSeparator(.hidden)
             
             Chart {
@@ -158,20 +161,20 @@ extension ChartView {
     
     var userDailyLikes: some View {
         VStack {
-            Text("Mediante tus reportes has ayudado a  \(Text("más de \(ChartDataExamples.totalLikesReports) personas").bold())")
+            Text("Mediante tus reportes has ayudado a  \(Text("más de \(viewModel.getTotalUserLikes()) personas").bold())")
                 .listRowSeparator(.hidden)
             
             Chart {
                 ForEach(ChartDataExamples.userDailyLikes, id: \.id) { chartPoint in
                     LineMark(
                         x: .value("day", chartPoint.day),
-                        y: .value("contribution", chartPoint.likes),
+                        y: .value("contribution", chartPoint.like_count),
                     )
                     .opacity(Calendar.current.isDateInToday(chartPoint.day) ? 1 : 0.5)
                     
                     PointMark(
                         x: .value("day", chartPoint.day),
-                        y: .value("contribution", chartPoint.likes)
+                        y: .value("contribution", chartPoint.like_count)
                     )
                     .symbol(.circle)
                     .symbolSize(50) 

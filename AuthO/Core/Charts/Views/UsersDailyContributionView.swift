@@ -9,18 +9,19 @@ import SwiftUI
 import Charts
 
 struct UsersDailyContributionView: View {
+    @StateObject private var viewModel = ChartsViewModel.shared
     @State private var showChart: Bool = true
     
     var body: some View {
         NavigationStack {
             Form {
-                Text("El promedio de contribuciones diarias en la semana fue de \(Text("30 al día").bold()) dentro de la aplicación")
+                Text("El promedio de contribuciones \(showChart ? "" : "acceptadas") diarias en la semana fue de \(Text("\(viewModel.averageWeeklyContributions()) al día").bold()) dentro de la aplicación")
                     .listRowBackground(Color.clear)
                 
                 Section {
                     Chart {
                         if showChart {
-                            ForEach(ChartDataExamples.usersContribution, id: \.id) { chartPoint in
+                            ForEach(viewModel.generalBarChartData, id: \.id) { chartPoint in
                                 BarMark(
                                     x: .value("day", chartPoint.day),
                                     y: .value("contribution", chartPoint.count),
@@ -37,17 +38,32 @@ struct UsersDailyContributionView: View {
                         AxisMarks(values: .stride(by: .day)) { value in
                             AxisGridLine()
                             AxisTick()
-                            AxisValueLabel(format: .dateTime.day(), centered: true)
+                            AxisValueLabel(format: .dateTime.day().month(), centered: true)
                         }
                     }
                     .padding(2)
                 }
                 
                 Section {
-                    Toggle("Mostrar reportes rechazados", isOn: $showChart)
+                    Toggle("Mostrar reportes rechazados o pendientes", isOn: $showChart)
                 }
             }
-            .navigationTitle("Users Daily Contribution")
+            .refreshable {
+                if showChart {
+                    viewModel.fetchBarChartData()
+                } else {
+                    viewModel.fetchBarChartDataAccepted()
+                }
+                
+            }
+            .onChange(of: showChart){ oldValue, newValue in
+                if oldValue {
+                    viewModel.fetchBarChartDataAccepted()
+                } else {
+                    viewModel.fetchBarChartData()
+                }
+            }
+            .navigationTitle("Contribuciones diarias de los usuarios")
             .navigationBarTitleDisplayMode(.inline)
         }
         

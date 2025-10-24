@@ -62,12 +62,12 @@ struct ChartDataExamples {
         return (0...6).compactMap { offset in
             if let date = calendar.date(byAdding: .day, value: -offset, to: today) {
                 let randomLikes = Int.random(in: 1...10)
-                return UserDailyLikesModel(day: date, likes: randomLikes)
+                return UserDailyLikesModel(day: date, like_count: randomLikes)
             }
             return nil
         }.reversed() // para que vaya de más antiguo a más reciente
     }()
     
-    static let totalLikesReports = userDailyLikes.reduce(0) { $0 + $1.likes }
+    static let totalLikesReports = userDailyLikes.reduce(0) { $0 + $1.like_count }
         
 }
