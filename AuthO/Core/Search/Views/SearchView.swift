@@ -71,7 +71,7 @@ struct SearchView: View {
                     Button {
                         showFilters=true
                     } label: {
-                        Image(systemName: "ellipsis.circle")
+                        Image(systemName: "line.3.horizontal.decrease.circle")
                     }
                     .tint(Color(.systemBlue))
                 }
