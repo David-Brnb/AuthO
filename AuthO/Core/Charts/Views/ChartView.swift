@@ -11,6 +11,7 @@ import Kingfisher
 
 struct ChartView: View {
     @Binding var selectedIndex: Int
+    @StateObject private var viewModel = ChartsViewModel.shared
     @EnvironmentObject var sesion: SessionManager
     
     var body: some View {
@@ -96,7 +97,7 @@ struct ChartView: View {
 extension ChartView {
     var usersDailyContributions: some View {
         VStack {
-            Text("El promedio de contribuciones diarias en la semana fue de \(Text("30 al día").bold()) dentro de la aplicación")
+            Text("El promedio de contribuciones diarias en la semana fue de \(Text("\(viewModel.averageWeeklyContributions()) al día").bold()) dentro de la aplicación")
                 .listRowSeparator(.hidden)
             
             Chart {
@@ -118,10 +119,10 @@ extension ChartView {
     
     var mostLikedReport: some View {
         HStack {
-            Text("La pagina del reporte con más likes fue \(Text(ChartDataExamples.mostLikedReport!.title).foregroundColor(.blue)) con un total de \(Text("\(String(format: "%.2f", ChartDataExamples.mostLikedPercentaje))%").bold()) del total")
+            Text("La pagina del reporte con más likes fue \(Text(viewModel.mostReportedPage()).foregroundColor(.blue)) con un total de \(Text("\(String(format: "%.2f", viewModel.mostReportedPagePercentage()))%").bold()) del total")
                 .listRowSeparator(.hidden)
             
-            Chart(ChartDataExamples.likedReports, id: \.id) { dataItem in
+            Chart(viewModel.pieChartData, id: \.id) { dataItem in
                 SectorMark(angle: .value("Type", dataItem.likes),
                            innerRadius: .ratio(0.5),
                            angularInset: 0.5)

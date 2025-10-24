@@ -9,6 +9,7 @@ import SwiftUI
 import Charts
 
 struct ReportLikesView: View {
+    @StateObject private var viewModel = ChartsViewModel.shared
     @State private var selectedOption = 0
     let options = ["Pay", "Barras", "Barra"]
     
@@ -23,16 +24,16 @@ struct ReportLikesView: View {
                 .pickerStyle(.segmented)
                 
                 
-                Text("La pagina del reporte con más likes fue \(Text(ChartDataExamples.mostLikedReport!.title).foregroundColor(.blue)) con un total de \(Text("\(String(format: "%.2f", ChartDataExamples.mostLikedPercentaje))%").bold()) del total")
+                Text("La pagina del reporte con más likes fue \(Text(viewModel.mostReportedPage()).foregroundColor(.blue)) con un total de \(Text("\(String(format: "%.2f", viewModel.mostReportedPagePercentage()))%").bold()) del total")
                     .listRowSeparator(.hidden)
                 
                 switch selectedOption{
                 case 0:
                     pieChart
                 case 1:
-                    EmptyView()
+                    barsChart
                 case 2:
-                    EmptyView()
+                    barChart
                     
                 default:
                     pieChart
@@ -56,7 +57,7 @@ struct ReportLikesView: View {
 
 extension  ReportLikesView {
     var pieChart: some View {
-        Chart(ChartDataExamples.likedReports, id: \.id) { dataItem in
+        Chart(viewModel.pieChartData, id: \.id) { dataItem in
             SectorMark(angle: .value("Type", dataItem.likes),
                        innerRadius: .ratio(0.5),
                        angularInset: 0.5)
@@ -64,6 +65,36 @@ extension  ReportLikesView {
         }
         .chartLegend(position: .bottom, alignment: .center)
         .padding(.horizontal, 20)
+        .frame(height: 500)
+    }
+    
+    var barChart: some View {
+        Chart(viewModel.pieChartData, id: \.id) { dataItem in
+            BarMark(
+                x: .value("Bar", "Total"),
+                y: .value("Likes", dataItem.likes),
+                stacking: .standard
+            )
+            .foregroundStyle(by: .value("Domain", dataItem.title))
+        }
+        .chartLegend(position: .bottom, alignment: .center)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 20)
+        .frame(height: 500)
+    }
+    
+    var barsChart: some View {
+        Chart(viewModel.pieChartData, id: \.id) { dataItem in
+            BarMark(
+                x: .value("title", dataItem.title),
+                y: .value("Likes", dataItem.likes),
+                stacking: .standard
+            )
+            .foregroundStyle(by: .value("Domain", dataItem.title))
+        }
+        .chartLegend(.hidden)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 20)
         .frame(height: 500)
     }
 }
