@@ -85,8 +85,13 @@ struct ChartView: View {
                 if !refreshed {
                     sesion.logout()
                 }
-                viewModel.fetchUserBarChartData(userId: sesion.currentUser!.id)
-                viewModel.fetchLikesReportsUser(userId: sesion.currentUser!.id)
+                
+                if let userId = KeychainService.shared.retrieveInt(for: "user_id") {
+                    viewModel.fetchUserBarChartData(userId: userId)
+                    viewModel.fetchLikesReportsUser(userId: userId)
+                } else {
+                    print("No se encontró el ID del usuario en el Keychain")
+                }
             }
         }
     }

@@ -17,9 +17,9 @@ struct UserModel: Codable, Identifiable{
 }
 
 struct UserDTO: Codable, Identifiable {
-    let id: Int
+    var id: Int
     let name: String
-    let email: String
+    var email: String
     let admin: Int?
     let profile_pic_url: String?
 }

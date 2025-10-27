@@ -63,4 +63,44 @@ class KeychainService {
             print("Error deleting token from keychain: \(status)")
         }
     }
+    
+    func save(id: Int, for key: String) {
+        var value = id
+        let data = Data(bytes: &value, count: MemoryLayout<Int>.size)
+
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: key,
+            kSecValueData as String: data
+        ]
+
+        SecItemDelete(query as CFDictionary) // eliminar anterior
+        let status = SecItemAdd(query as CFDictionary, nil)
+        if status != errSecSuccess {
+            print("Error saving Int to keychain: \(status)")
+        }
+    }
+    
+    func retrieveInt(for key: String) -> Int? {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecAttrAccount as String: key,
+            kSecReturnData as String: kCFBooleanTrue!,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+
+        var dataTypeRef: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, &dataTypeRef)
+
+        if status == errSecSuccess, let data = dataTypeRef as? Data {
+            return data.withUnsafeBytes { $0.load(as: Int.self) }
+        } else {
+            if status != errSecItemNotFound {
+                print("Error retrieving Int from keychain: \(status)")
+            }
+            return nil
+        }
+    }
 }

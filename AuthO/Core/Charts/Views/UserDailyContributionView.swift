@@ -52,20 +52,31 @@ struct UserDailyContributionView: View {
                 }
             }
             .refreshable {
-                if showChart {
-                    viewModel.fetchUserBarChartData(userId: sesion.currentUser!.id)
-                    
+                if let userId = KeychainService.shared.retrieveInt(for: "user_id") {
+                    if showChart {
+                        viewModel.fetchUserBarChartData(userId: userId)
+                        
+                    } else {
+                        viewModel.fetchUserBarChartDataAccepted(userId: userId)
+                    }
                 } else {
-                    viewModel.fetchUserBarChartDataAccepted(userId: sesion.currentUser!.id)
+                    print("No se encontró el ID del usuario en el Keychain")
                 }
+                
             }
             .onChange(of: showChart) { oldValue, newValue in
-                if newValue {
-                    viewModel.fetchUserBarChartData(userId: sesion.currentUser!.id)
-                    
+                
+                if let userId = KeychainService.shared.retrieveInt(for: "user_id") { 
+                    if newValue {
+                        viewModel.fetchUserBarChartData(userId: userId)
+                        
+                    } else {
+                        viewModel.fetchUserBarChartDataAccepted(userId: userId)
+                    }
                 } else {
-                    viewModel.fetchUserBarChartDataAccepted(userId: sesion.currentUser!.id)
+                    print("No se encontró el ID del usuario en el Keychain")
                 }
+                
                 
             }
             .navigationTitle("Contribuciones diarias")

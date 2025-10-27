@@ -30,6 +30,8 @@ struct CustonInputField: View {
                         if showText {
                             TextField(placeholder, text: $text)
                                 .frame(height: 20)
+                                .autocorrectionDisabled(true)
+                                .textInputAutocapitalization(.never)
                         } else {
                             SecureField(placeholder, text: $text)
                                 .frame(height: 20)

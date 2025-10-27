@@ -26,12 +26,20 @@ class SessionManager: ObservableObject {
     }
     
     func login(user: UserDTO) {
-        self.currentUser = user
+        // guardamos el id del usuario en keychain por seguridad
+        KeychainService.shared.save(id: user.id, for: "user_id")
+        
+        // borramos le id y el email del user porque son datos sensibles y que no están seguros si se mantienen
+        var safeUser = user
+        safeUser.id = -1
+        safeUser.email = ""
+        
+        self.currentUser = safeUser
         self.logged = true
         
-        print("Logged in as: \(user)")
+        print("Logged in as: \(safeUser)")
         
-        if let encoded = try? JSONEncoder().encode(user){
+        if let encoded = try? JSONEncoder().encode(safeUser){
             UserDefaults.standard.set(encoded, forKey: "currentUser")
         }
     }
@@ -40,6 +48,7 @@ class SessionManager: ObservableObject {
         // Clear tokens from keychain and update state
         KeychainService.shared.delete(for: "accessToken")
         KeychainService.shared.delete(for: "refreshToken")
+        KeychainService.shared.delete(for: "user_id")
         
         self.logged = false
         self.currentUser = nil
