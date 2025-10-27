@@ -10,11 +10,27 @@
 		359D00E52E8329A700292DC7 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 359D00E42E8329A700292DC7 /* Kingfisher */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		3513C28E2EAC3A1800D46194 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 35800CFD2E81AFEC004A726F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 35800D042E81AFEC004A726F;
+			remoteInfo = AuthO;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		3513C28A2EAC3A1800D46194 /* AuthOTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AuthOTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		35800D052E81AFEC004A726F /* AuthO.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AuthO.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		3513C28B2EAC3A1800D46194 /* AuthOTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = AuthOTests;
+			sourceTree = "<group>";
+		};
 		35800D072E81AFEC004A726F /* AuthO */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = AuthO;
@@ -23,6 +39,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		3513C2872EAC3A1800D46194 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		35800D022E81AFEC004A726F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -38,6 +61,7 @@
 			isa = PBXGroup;
 			children = (
 				35800D072E81AFEC004A726F /* AuthO */,
+				3513C28B2EAC3A1800D46194 /* AuthOTests */,
 				35800D062E81AFEC004A726F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -46,6 +70,7 @@
 			isa = PBXGroup;
 			children = (
 				35800D052E81AFEC004A726F /* AuthO.app */,
+				3513C28A2EAC3A1800D46194 /* AuthOTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -53,6 +78,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		3513C2892EAC3A1800D46194 /* AuthOTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3513C2922EAC3A1800D46194 /* Build configuration list for PBXNativeTarget "AuthOTests" */;
+			buildPhases = (
+				3513C2862EAC3A1800D46194 /* Sources */,
+				3513C2872EAC3A1800D46194 /* Frameworks */,
+				3513C2882EAC3A1800D46194 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3513C28F2EAC3A1800D46194 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				3513C28B2EAC3A1800D46194 /* AuthOTests */,
+			);
+			name = AuthOTests;
+			packageProductDependencies = (
+			);
+			productName = AuthOTests;
+			productReference = 3513C28A2EAC3A1800D46194 /* AuthOTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		35800D042E81AFEC004A726F /* AuthO */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 35800D102E81AFED004A726F /* Build configuration list for PBXNativeTarget "AuthO" */;
@@ -86,6 +134,10 @@
 				LastSwiftUpdateCheck = 2600;
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
+					3513C2892EAC3A1800D46194 = {
+						CreatedOnToolsVersion = 26.0.1;
+						TestTargetID = 35800D042E81AFEC004A726F;
+					};
 					35800D042E81AFEC004A726F = {
 						CreatedOnToolsVersion = 26.0;
 					};
@@ -109,11 +161,19 @@
 			projectRoot = "";
 			targets = (
 				35800D042E81AFEC004A726F /* AuthO */,
+				3513C2892EAC3A1800D46194 /* AuthOTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		3513C2882EAC3A1800D46194 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		35800D032E81AFEC004A726F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -124,6 +184,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		3513C2862EAC3A1800D46194 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		35800D012E81AFEC004A726F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -133,7 +200,57 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		3513C28F2EAC3A1800D46194 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 35800D042E81AFEC004A726F /* AuthO */;
+			targetProxy = 3513C28E2EAC3A1800D46194 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		3513C2902EAC3A1800D46194 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y9JXKJ8RM3;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = DafGet.AuthOTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AuthO.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AuthO";
+			};
+			name = Debug;
+		};
+		3513C2912EAC3A1800D46194 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Y9JXKJ8RM3;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = DafGet.AuthOTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AuthO.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AuthO";
+			};
+			name = Release;
+		};
 		35800D0E2E81AFED004A726F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -326,6 +443,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		3513C2922EAC3A1800D46194 /* Build configuration list for PBXNativeTarget "AuthOTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3513C2902EAC3A1800D46194 /* Debug */,
+				3513C2912EAC3A1800D46194 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		35800D002E81AFEC004A726F /* Build configuration list for PBXProject "AuthO" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

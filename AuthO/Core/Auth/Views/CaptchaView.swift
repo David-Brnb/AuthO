@@ -50,18 +50,6 @@ struct CaptchaView: View {
             
             Spacer()
                 .frame(height: 80)
-            
-            Button {
-                verifyCaptcha()
-            } label : {
-                Text("Listo")
-                    .font(.headline)
-                    .foregroundStyle(.white)
-                    .frame(width: 300, height: 50)
-                    .background(Color(.systemOrange))
-                    .clipShape(Capsule())
-                    .padding()
-            }
 
             Spacer()
         }
