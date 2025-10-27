@@ -59,7 +59,11 @@ struct UserDailyLikesView: View {
                 }
             }
             .refreshable {
-                viewModel.fetchLikesReportsUser(userId: sesion.currentUser!.id)
+                if let userId = KeychainService.shared.retrieveInt(for: "user_id") {
+                    viewModel.fetchLikesReportsUser(userId: userId)
+                } else {
+                    print("No se encontró el ID del usuario en el Keychain")
+                }
             }
             .navigationTitle("Impacto de reportes propios")
             .navigationBarTitleDisplayMode(.inline)

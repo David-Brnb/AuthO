@@ -120,7 +120,13 @@ struct ProfileView: View {
             .ignoresSafeArea()
             .onAppear(){
                 _ = FeedViewModel.shared
-                viewModel.updateUserId(id: sesion.currentUser!.id)
+                
+                if let userId = KeychainService.shared.retrieveInt(for: "user_id") {
+                    viewModel.updateUserId(id: sesion.currentUser!.id)
+                } else {
+                    print("No se encontró el ID del usuario en el Keychain")
+                }
+                
                 viewModel.fetchData()
                 viewModel.fetchReports()
                 Task {
